@@ -2,41 +2,12 @@
 
 This file contains all the latest changes and updates to Postal.
 
-## [3.11.0](https://github.com/MissionInbox/postal/compare/3.10.0...3.11.0) (2025-04-21)
+## [3.7.0](https://github.com/MissionInbox/postal/compare/3.6.0...3.7.0) (2025-04-22)
 
 
 ### Features
 
-* **domains:** update domain verification to use DNS check timestamp ([d2916eb](https://github.com/MissionInbox/postal/commit/d2916eb45ecf7b963aed1b9d15dd6a24963eb9c4))
-
-## [3.10.0](https://github.com/MissionInbox/postal/compare/3.9.0...3.10.0) (2025-04-21)
-
-
-### Features
-
-* **domains:** enhance domain verification and pagination features ([7ebe457](https://github.com/MissionInbox/postal/commit/7ebe4570340c9da6be84340389055b54c0beec2b))
-
-## [3.9.0](https://github.com/MissionInbox/postal/compare/3.8.0...3.9.0) (2025-04-21)
-
-
-### Features
-
-* add bulk verify and download domains ([9a96ebd](https://github.com/MissionInbox/postal/commit/9a96ebde40763bb690d5985aaea4853713b3ba3c))
-* **yaml:** increase worker thread count from 2 to 10 for improved performance ([541f8a1](https://github.com/MissionInbox/postal/commit/541f8a1d6b02711c218b47ab3fe78c274286803e))
-
-## [3.8.0](https://github.com/MissionInbox/postal/compare/3.7.0...3.8.0) (2025-04-21)
-
-
-### Features
-
-* **limits:** add admin controls for send limit configuration in limits form ([228bb77](https://github.com/MissionInbox/postal/commit/228bb7773d360c77c74489fae5f90a3a3a52033a))
-
-## [3.7.0](https://github.com/MissionInbox/postal/compare/3.6.0...3.7.0) (2025-04-21)
-
-
-### Features
-
-* **dkim:** enhance DKIM record handling with dynamic identifiers and global key generation ([c1b73b8](https://github.com/MissionInbox/postal/commit/c1b73b83d90cbfc1af37c381f3f6869ca4fc0174))
+* **api:** add priority parameter to email send API for prioritizing message delivery
 
 ## [3.6.0](https://github.com/MissionInbox/postal/compare/3.5.0...3.6.0) (2025-04-20)
 

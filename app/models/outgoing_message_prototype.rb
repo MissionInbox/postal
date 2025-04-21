@@ -18,6 +18,7 @@ class OutgoingMessagePrototype
   attr_accessor :tag
   attr_accessor :credential
   attr_accessor :bounce
+  attr_accessor :priority
 
   def initialize(server, ip, source_type, attributes)
     @server = server
@@ -194,7 +195,12 @@ class OutgoingMessagePrototype
     message.credential_id = credential&.id
     message.received_with_ssl = true
     message.bounce = @bounce
-    message.save
+    # Save the message, passing along the priority parameter if set
+    if @priority
+      message.save(priority: @priority)
+    else
+      message.save
+    end
     { id: message.id, token: message.token }
   end
 

@@ -29,6 +29,7 @@ module LegacyAPI
     #                   html_body       => The HTML body
     #                   bounce          => Is this message a bounce?
     #                   tag             => A custom tag to add to the message
+    #                   priority        => Integer value (higher = processed sooner)
     #                   custom_headers  => A hash of custom headers
     #                   attachments     => An array of attachments
     #                                      (name, content_type and data (base64))
@@ -49,6 +50,7 @@ module LegacyAPI
       attributes[:html_body] = api_params["html_body"]
       attributes[:bounce] = api_params["bounce"] ? true : false
       attributes[:tag] = api_params["tag"]
+      attributes[:priority] = api_params["priority"].to_i if api_params["priority"]
       attributes[:custom_headers] = api_params["headers"] if api_params["headers"]
       attributes[:attachments] = []
 
@@ -76,6 +78,7 @@ module LegacyAPI
     #                                      the message to
     #                   mail_from       => REQ: the address to send the email from
     #                   data            => REQ: base64-encoded mail data
+    #                   priority        => Integer value (higher = processed sooner)
     #
     #   Response:       A array of hashes containing message information
     #                   OR an error if there is an issue sending the message
@@ -123,7 +126,10 @@ module LegacyAPI
           message.domain_id = authenticated_domain.id
           message.credential_id = @current_credential.id
           message.bounce = api_params["bounce"] ? true : false
-          message.save
+          
+          # Apply priority if provided
+          priority = api_params["priority"].to_i if api_params["priority"]
+          message.save(priority: priority)
           result[:message_id] = message.message_id if result[:message_id].nil?
           result[:messages][rcpt_to] = { id: message.id, token: message.token }
         end

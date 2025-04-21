@@ -204,9 +204,9 @@ module Postal
       #
       # Save this message
       #
-      def save(queue_on_create: true)
+      def save(queue_on_create: true, priority: nil)
         save_raw_message
-        persisted? ? _update : _create(queue: queue_on_create)
+        persisted? ? _update : _create(queue: queue_on_create, priority: priority)
         self
       end
 
@@ -350,13 +350,14 @@ module Postal
       #
       # Create a new item in the message queue for this message
       #
-      def add_to_message_queue(**options)
+      def add_to_message_queue(priority: nil, **options)
         QueuedMessage.create!({
           message: self,
           server_id: @database.server_id,
           batch_key: batch_key,
           domain: recipient_domain,
-          route_id: route_id
+          route_id: route_id,
+          priority: priority || 0
         }.merge(options))
       end
 
@@ -582,7 +583,7 @@ module Postal
         @database.update("messages", @attributes.except(:id), where: { id: @attributes["id"] })
       end
 
-      def _create(queue: true)
+      def _create(queue: true, priority: nil)
         self.timestamp = Time.now.to_f if timestamp.blank?
         self.status = "Pending" if status.blank?
         self.token = SecureRandom.alphanumeric(16) if token.blank?
@@ -591,7 +592,7 @@ module Postal
         @database.statistics.increment_all(timestamp, scope)
         Statistic.global.increment!(:total_messages)
         Statistic.global.increment!("total_#{scope}".to_sym)
-        add_to_message_queue if queue
+        add_to_message_queue(priority: priority) if queue
       end
 
       def mail
