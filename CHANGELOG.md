@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.7.0](https://github.com/MissionInbox/postal/compare/3.6.0...3.7.0) (2025-04-21)
+
+
+### Features
+
+* **dkim:** enhance DKIM record handling with dynamic identifiers and global key generation ([c1b73b8](https://github.com/MissionInbox/postal/commit/c1b73b83d90cbfc1af37c381f3f6869ca4fc0174))
+
 ## [3.6.0](https://github.com/MissionInbox/postal/compare/3.5.0...3.6.0) (2025-04-20)
 
 
