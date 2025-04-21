@@ -14,14 +14,21 @@
     from your mail server to external recipients in a rolling 60 minute window.
     The current limit is shown below.
 
-  %ul.limits.u-margin
-    %li.limits__limit
-      %p.limits__value
-        - if @server.send_limit
-          = number_with_delimiter @server.send_limit
-        - else
-          unlimited
-      %p.limits__frequency e-mails every 60 minutes*
+  = form_for [organization, @server], :remote => true do |f|
+    = f.error_messages
+    %ul.limits.u-margin
+      %li.limits__limit
+        %p.limits__value
+          - if current_user.admin?
+            = f.number_field :send_limit, class: 'input input--text', style: 'width: 150px; text-align: center;', placeholder: "unlimited"
+          - elsif @server.send_limit
+            = number_with_delimiter @server.send_limit
+          - else
+            unlimited
+        %p.limits__frequency e-mails every 60 minutes*
+    - if current_user.admin?
+      .buttonSet
+        = f.submit "Save limit", :class => 'button button--positive js-form-submit'
 
 
   %p.pageContent__text
