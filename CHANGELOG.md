@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.8.0](https://github.com/MissionInbox/postal/compare/3.7.0...3.8.0) (2025-04-21)
+
+
+### Features
+
+* **limits:** add admin controls for send limit configuration in limits form ([228bb77](https://github.com/MissionInbox/postal/commit/228bb7773d360c77c74489fae5f90a3a3a52033a))
+
 ## [3.7.0](https://github.com/MissionInbox/postal/compare/3.6.0...3.7.0) (2025-04-21)
 
 
