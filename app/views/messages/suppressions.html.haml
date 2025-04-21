@@ -9,18 +9,18 @@
     = form_tag suppressions_organization_server_messages_path(organization, @server), method: :get, class: "form" do
       .fieldSet.fieldSet--wide
         .fieldSet__field
-          = label_tag :query, "Search email address", class: "fieldSet__label"
+          = label_tag :query, "Find email address", class: "fieldSet__label"
           .fieldSet__input
-            = text_field_tag :query, @query, class: "input input--text", placeholder: "Enter email address to search"
-            = submit_tag "Search", class: "button button--small button--positive"
+            = text_field_tag :query, @query, class: "input input--text", placeholder: "Enter exact email address"
+            = submit_tag "Find", class: "button button--small button--positive"
             - if @query.present?
               = link_to "Clear", suppressions_organization_server_messages_path(organization, @server), class: "button button--small button--neutral"
   - if @suppressions[:records].empty?
     .noData.noData--clean
       - if @query.present?
-        %h2.noData__title No matching addresses found in the suppression list.
+        %h2.noData__title Email address not found.
         %p.noData__text
-          No addresses matching '#{@query}' were found in the suppression list.
+          '#{@query}' was not found in the suppression list.
           = link_to "Clear search", suppressions_organization_server_messages_path(organization, @server), class: "button button--small button--neutral"
       - else
         %h2.noData__title No addresses on the suppression list.
@@ -29,8 +29,13 @@
           future messages to the same recipient being sent through.
   - else
     %p.pageContent__intro.u-margin
-      When messages cannot be delivered, addresses are added to the suppression list which stops
-      future messages to the same recipient being sent through. Recipients are removed from the list after #{Postal::Config.postal.default_suppression_list_automatic_removal_days} days.
+      - if @query.present?
+        %strong Found email address: #{@query}
+        %br
+        = link_to "← Back to all entries", suppressions_organization_server_messages_path(organization, @server), class: "button button--small button--neutral"
+      - else
+        When messages cannot be delivered, addresses are added to the suppression list which stops
+        future messages to the same recipient being sent through. Recipients are removed from the list after #{Postal::Config.postal.default_suppression_list_automatic_removal_days} days.
     %ul.suppressionList
       - for suppression in @suppressions[:records]
         %li.suppressionList__item
