@@ -117,9 +117,9 @@ class DomainsController < ApplicationController
   
   def verify_all
     if @server
-      @domains = @server.domains.where(verified_at: nil).to_a
+      @domains = @server.domains.where(dns_checked_at: nil).to_a
     else
-      @domains = organization.domains.where(verified_at: nil).to_a
+      @domains = organization.domains.where(dns_checked_at: nil).to_a
     end
     
     verified_count = 0
@@ -128,7 +128,7 @@ class DomainsController < ApplicationController
     @domains.each do |domain|
       if domain.verification_method == "DNS"
         begin
-          if domain.verify_with_dns
+          if domain.check_dns(:manual)
             verified_count += 1
           else
             error_count += 1
