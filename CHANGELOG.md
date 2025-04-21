@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.9.0](https://github.com/MissionInbox/postal/compare/3.8.0...3.9.0) (2025-04-21)
+
+
+### Features
+
+* add bulk verify and download domains ([9a96ebd](https://github.com/MissionInbox/postal/commit/9a96ebde40763bb690d5985aaea4853713b3ba3c))
+* **yaml:** increase worker thread count from 2 to 10 for improved performance ([541f8a1](https://github.com/MissionInbox/postal/commit/541f8a1d6b02711c218b47ab3fe78c274286803e))
+
 ## [3.8.0](https://github.com/MissionInbox/postal/compare/3.7.0...3.8.0) (2025-04-21)
 
 
