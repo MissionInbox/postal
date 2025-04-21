@@ -46,6 +46,7 @@ module Worker
         QueuedMessage.where(ip_address_id: [nil, @ip_addresses])
                      .where(locked_by: nil, locked_at: nil)
                      .ready_with_delayed_retry
+                     .order_by_priority
                      .limit(1)
                      .update_all(locked_by: @locker, locked_at: @lock_time)
       end

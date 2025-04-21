@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.7.0](https://github.com/MissionInbox/postal/compare/3.6.0...3.7.0) (2025-04-22)
+
+
+### Features
+
+* **api:** add priority parameter to email send API for prioritizing message delivery
+
 ## [3.6.0](https://github.com/MissionInbox/postal/compare/3.5.0...3.6.0) (2025-04-20)
 
 
