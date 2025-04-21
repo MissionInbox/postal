@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.11.0](https://github.com/MissionInbox/postal/compare/3.10.0...3.11.0) (2025-04-21)
+
+
+### Features
+
+* **domains:** update domain verification to use DNS check timestamp ([d2916eb](https://github.com/MissionInbox/postal/commit/d2916eb45ecf7b963aed1b9d15dd6a24963eb9c4))
+
 ## [3.10.0](https://github.com/MissionInbox/postal/compare/3.9.0...3.10.0) (2025-04-21)
 
 
