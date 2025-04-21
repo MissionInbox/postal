@@ -1,0 +1,18 @@
+.simplePagination
+  %p.simplePagination__previous
+    - if page > 1
+      = link_to "&laquo; First".html_safe, request.params.merge(:page => 1), :class => 'simplePagination__link'
+      = link_to "&larr; Previous".html_safe, request.params.merge(:page => page - 1), :class => 'simplePagination__link'
+  .simplePagination__current
+    %p.simplePagination__info Showing #{domains.size} of #{total_domains} #{total_domains == 1 ? "domain" : "domains"}
+    %p Page #{page} of #{total_pages}
+    %form.simplePagination__goto{action: request.path, method: 'get'}
+      - request.params.each do |key, value|
+        - next if key == 'page'
+        %input{type: 'hidden', name: key, value: value}
+      %input.simplePagination__input{type: 'number', name: 'page', min: 1, max: total_pages, value: page, style: 'width: 60px'}
+      %button.simplePagination__link{type: 'submit'} Go
+  %p.simplePagination__next
+    - if total_pages > page
+      = link_to "Next &rarr;".html_safe, request.params.merge(:page => page + 1), :class => 'simplePagination__link'
+      = link_to "Last &raquo;".html_safe, request.params.merge(:page => total_pages), :class => 'simplePagination__link'

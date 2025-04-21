@@ -148,11 +148,16 @@ class Domain < ApplicationRecord
   def verify_with_dns
     return false unless verification_method == "DNS"
 
-    result = resolver.txt(name)
+    begin
+      result = resolver.txt(name)
 
-    if result.include?(dns_verification_string)
-      self.verified_at = Time.now
-      return save
+      if result.include?(dns_verification_string)
+        self.verified_at = Time.now
+        return save
+      end
+    rescue => e
+      Rails.logger.error "DNS verification error for domain #{name}: #{e.message}"
+      return false
     end
 
     false
