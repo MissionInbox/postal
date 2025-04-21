@@ -15,6 +15,7 @@ This file contains all the latest changes and updates to Postal.
 ### Features
 
 * **api:** add priority parameter to email send API for prioritizing message delivery
+* **suppressions:** add search and delete functionality for suppression list management
 
 ## [3.6.0](https://github.com/MissionInbox/postal/compare/3.5.0...3.6.0) (2025-04-20)
 
