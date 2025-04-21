@@ -26,6 +26,11 @@ module Postal
       def all_with_pagination(page)
         @database.select_with_pagination(:suppressions, page, order: :timestamp, direction: "desc")
       end
+      
+      def search_with_pagination(page, query)
+        where_clause = { address: { like: "%#{query}%" } }
+        @database.select_with_pagination(:suppressions, page, where: where_clause, order: :timestamp, direction: "desc")
+      end
 
       def remove(type, address)
         @database.delete("suppressions", where: { type: type, address: address }).positive?

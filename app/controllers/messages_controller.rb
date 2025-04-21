@@ -144,7 +144,23 @@ class MessagesController < ApplicationController
   end
 
   def suppressions
-    @suppressions = @server.message_db.suppression_list.all_with_pagination(params[:page])
+    @query = params[:query]
+    if @query.present?
+      @suppressions = @server.message_db.suppression_list.search_with_pagination(params[:page], @query)
+    else
+      @suppressions = @server.message_db.suppression_list.all_with_pagination(params[:page])
+    end
+  end
+  
+  def remove_suppression
+    type = params[:type]
+    address = params[:address]
+    if @server.message_db.suppression_list.remove(type, address)
+      flash[:notice] = "#{address} has been removed from the suppression list."
+    else
+      flash[:alert] = "Could not remove #{address} from the suppression list."
+    end
+    redirect_to suppressions_organization_server_messages_path(organization, @server)
   end
 
   def activity
