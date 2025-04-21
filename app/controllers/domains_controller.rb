@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'csv'
+
 class DomainsController < ApplicationController
 
   include WithinOrganization
@@ -104,6 +106,54 @@ class DomainsController < ApplicationController
     else
       redirect_to_with_json [:setup, organization, @server, @domain], alert: "There seems to be something wrong with your DNS records. Check below for information."
     end
+  end
+  
+  def verify_all
+    if @server
+      @domains = @server.domains.where(verified_at: nil).to_a
+    else
+      @domains = organization.domains.where(verified_at: nil).to_a
+    end
+    
+    verified_count = 0
+    @domains.each do |domain|
+      if domain.verification_method == "DNS" && domain.verify_with_dns
+        verified_count += 1
+      end
+    end
+    
+    if verified_count > 0
+      redirect_to_with_json [organization, @server, :domains], notice: "#{verified_count} #{'domain'.pluralize(verified_count)} verified successfully."
+    else
+      redirect_to_with_json [organization, @server, :domains], alert: "No domains could be verified. Make sure you've added the TXT records correctly."
+    end
+  end
+  
+  def export
+    if @server
+      @domains = @server.domains.order(:name).to_a
+    else
+      @domains = organization.domains.order(:name).to_a
+    end
+    
+    csv_data = CSV.generate do |csv|
+      csv << ["Domain Name", "SPF Status", "DKIM Status", "MX Status", "Return Path Status", "Verified", "SPF Record", "DKIM Record", "Return Path Domain"]
+      @domains.each do |domain|
+        csv << [
+          domain.name,
+          domain.spf_status,
+          domain.dkim_status,
+          domain.mx_status,
+          domain.return_path_status,
+          domain.verified? ? "Yes" : "No",
+          domain.spf_record,
+          domain.dkim_record,
+          domain.return_path_domain
+        ]
+      end
+    end
+    
+    send_data csv_data, filename: "domains-#{Time.now.strftime('%Y-%m-%d')}.csv", type: "text/csv"
   end
 
 end

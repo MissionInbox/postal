@@ -23,7 +23,9 @@
       %p.noData__text
         To send & receive messages you need to add & verify the domain you wish to send/receive
         messages to/from. Add your domain below to get started.
-      %p.noData__button= link_to "Add your first domain", [:new, organization, @server, :domain], :class => "button button--positive"
+      %p.noData__button
+        = link_to "Add your first domain", [:new, organization, @server, :domain], :class => "button button--positive"
+        = link_to "Export as CSV", [:export, organization, @server, :domains], :class => "button button--neutral"
 
   - else
     %ul.domainList.u-margin
@@ -71,4 +73,7 @@
                 = link_to "DNS setup", [:setup, organization, @server, domain]
               = link_to "Delete", [organization, @server, domain], :remote => :delete, :method => :delete, :data => {:confirm => "Are you sure you wish to remove this domain?", :disable_with => "Deleting..."}, :class => 'domainList__delete'
 
-    %p.u-center= link_to "Add new domain", [:new, organization, @server, :domain], :class => "button button--positive"
+    .u-center
+      = link_to "Add new domain", [:new, organization, @server, :domain], :class => "button button--positive"
+      = link_to "Verify All", [:verify_all, organization, @server, :domains], :method => :post, :class => "button button--neutral", :data => {:confirm => "This will attempt to verify all unverified domains with DNS verification method. Continue?"}
+      = link_to "Export as CSV", [:export, organization, @server, :domains], :class => "button button--neutral"
