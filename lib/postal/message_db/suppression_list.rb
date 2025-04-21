@@ -27,8 +27,9 @@ module Postal
         @database.select_with_pagination(:suppressions, page, order: :timestamp, direction: "desc")
       end
       
-      def search_with_pagination(page, query)
-        where_clause = { address: { like: "%#{query}%" } }
+      def search_with_pagination(page, email)
+        # Simple exact match on email address
+        where_clause = { address: email }
         @database.select_with_pagination(:suppressions, page, where: where_clause, order: :timestamp, direction: "desc")
       end
 
