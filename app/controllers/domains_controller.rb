@@ -16,11 +16,18 @@ class DomainsController < ApplicationController
   end
 
   def index
+    @page = (params[:page] || 1).to_i
+    @per_page = 30
+    
     if @server
-      @domains = @server.domains.order(:name).to_a
+      @domains_scope = @server.domains.order(:name)
     else
-      @domains = organization.domains.order(:name).to_a
+      @domains_scope = organization.domains.order(:name)
     end
+    
+    @total_domains = @domains_scope.count
+    @total_pages = (@total_domains.to_f / @per_page).ceil
+    @domains = @domains_scope.limit(@per_page).offset((@page - 1) * @per_page).to_a
   end
 
   def new
@@ -116,29 +123,44 @@ class DomainsController < ApplicationController
     end
     
     verified_count = 0
+    error_count = 0
+    
     @domains.each do |domain|
-      if domain.verification_method == "DNS" && domain.verify_with_dns
-        verified_count += 1
+      if domain.verification_method == "DNS"
+        begin
+          if domain.verify_with_dns
+            verified_count += 1
+          else
+            error_count += 1
+          end
+        rescue => e
+          # Log error but continue with other domains
+          Rails.logger.error "Error verifying domain #{domain.name}: #{e.message}"
+          error_count += 1
+        end
       end
     end
     
     if verified_count > 0
-      redirect_to_with_json [organization, @server, :domains], notice: "#{verified_count} #{'domain'.pluralize(verified_count)} verified successfully."
+      message = "#{verified_count} #{'domain'.pluralize(verified_count)} verified successfully."
+      message += " #{error_count} #{'domain'.pluralize(error_count)} failed verification." if error_count > 0
+      redirect_to_with_json [organization, @server, :domains], notice: message
     else
       redirect_to_with_json [organization, @server, :domains], alert: "No domains could be verified. Make sure you've added the TXT records correctly."
     end
   end
   
   def export
+    # Export all domains without pagination
     if @server
-      @domains = @server.domains.order(:name).to_a
+      domains_for_export = @server.domains.order(:name)
     else
-      @domains = organization.domains.order(:name).to_a
+      domains_for_export = organization.domains.order(:name)
     end
     
     csv_data = CSV.generate do |csv|
       csv << ["Domain Name", "SPF Status", "DKIM Status", "MX Status", "Return Path Status", "Verified", "SPF Record", "DKIM Record", "Return Path Domain"]
-      @domains.each do |domain|
+      domains_for_export.each do |domain|
         csv << [
           domain.name,
           domain.spf_status,
