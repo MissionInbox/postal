@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.17.0](https://github.com/MissionInbox/postal/compare/3.16.0...3.17.0) (2025-04-22)
+
+
+### Features
+
+* **servers:** create default API credential for new servers and include in response ([476c063](https://github.com/MissionInbox/postal/commit/476c0639e684a50044f9595b3ae9b3f5ac538eeb))
+
 ## [3.16.0](https://github.com/MissionInbox/postal/compare/3.15.0...3.16.0) (2025-04-22)
 
 
