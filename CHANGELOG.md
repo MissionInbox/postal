@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.16.0](https://github.com/MissionInbox/postal/compare/3.15.0...3.16.0) (2025-04-22)
+
+
+### Features
+
+* **servers:** add create endpoint for servers with organization validation ([219e64c](https://github.com/MissionInbox/postal/commit/219e64c25f18158830aba069a256723c968b86d5))
+
 ## [3.15.0](https://github.com/MissionInbox/postal/compare/3.14.0...3.15.0) (2025-04-22)
 
 
