@@ -137,7 +137,14 @@ module LegacyAPI
           server.message_db.provisioner.provision
         end
         
-        # Return the new server details
+        # Create a default API credential for the server
+        api_credential = server.credentials.create(
+          type: "API",
+          name: "Default API Credential",
+          key: SecureRandom.alphanumeric(24).downcase
+        )
+        
+        # Return the new server details along with the API key
         render_success(
           server: {
             uuid: server.uuid,
@@ -149,7 +156,8 @@ module LegacyAPI
               uuid: organization.uuid,
               name: organization.name,
               permalink: organization.permalink
-            }
+            },
+            api_key: api_credential.key
           }
         )
       else

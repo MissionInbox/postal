@@ -24,12 +24,15 @@ RSpec.describe "POST /api/v1/servers/create" do
           "X-Server-API-Key" => credential.key
         }
       }.to change { Server.count }.by(1)
+        .and change { Credential.count }.by(1)
 
       expect(response.status).to eq(200)
       body = JSON.parse(response.body)
       expect(body["status"]).to eq("success")
       expect(body["data"]["server"]["name"]).to eq("Test Server")
       expect(body["data"]["server"]["organization"]["uuid"]).to eq(organization.uuid)
+      expect(body["data"]["server"]["api_key"]).to be_present
+      expect(body["data"]["server"]["api_key"].length).to eq(24)
     end
   end
 
