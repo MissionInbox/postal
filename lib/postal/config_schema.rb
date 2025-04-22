@@ -354,6 +354,12 @@ module Postal
         default "psrp"
       end
 
+      string :spf_ips do
+        description "IP addresses to include in SPF records (comma-separated list)"
+        array
+        default ""
+      end
+
       integer :timeout do
         description "The timeout to wait for DNS resolution"
         default 5

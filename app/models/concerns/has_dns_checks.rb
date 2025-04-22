@@ -49,15 +49,41 @@ module HasDNSChecks
       self.spf_status = "Missing"
       self.spf_error = "No SPF record exists for this domain"
     else
-      suitable_spf_records = spf_records.grep(/include:\s*#{Regexp.escape(Postal::Config.dns.spf_include)}/)
-      if suitable_spf_records.empty?
-        self.spf_status = "Invalid"
-        self.spf_error = "An SPF record exists but it doesn't include #{Postal::Config.dns.spf_include}"
-        false
+      # Get the expected SPF record based on current configuration
+      expected_record = spf_record
+
+      # If we're using IP addresses, check if any of them are in the SPF record
+      if Postal::Config.dns.spf_ips.present?
+        # Check if each required IP is in the record
+        missing_ips = []
+        Postal::Config.dns.spf_ips.each do |ip|
+          mechanism = ip.include?(":") ? "ip6:#{ip}" : "ip4:#{ip}"
+          unless spf_records.any? { |record| record.include?(mechanism) }
+            missing_ips << mechanism
+          end
+        end
+        
+        if missing_ips.empty?
+          self.spf_status = "OK"
+          self.spf_error = nil
+          true
+        else
+          self.spf_status = "Invalid"
+          self.spf_error = "SPF record is missing the following mechanisms: #{missing_ips.join(', ')}"
+          false
+        end
       else
-        self.spf_status = "OK"
-        self.spf_error = nil
-        true
+        # Fall back to checking for the include mechanism
+        suitable_spf_records = spf_records.grep(/include:\s*#{Regexp.escape(Postal::Config.dns.spf_include)}/)
+        if suitable_spf_records.empty?
+          self.spf_status = "Invalid"
+          self.spf_error = "An SPF record exists but it doesn't include #{Postal::Config.dns.spf_include}"
+          false
+        else
+          self.spf_status = "OK"
+          self.spf_error = nil
+          true
+        end
       end
     end
   end
