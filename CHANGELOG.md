@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.19.0](https://github.com/MissionInbox/postal/compare/3.18.0...3.19.0) (2025-04-22)
+
+
+### Features
+
+* **servers:** add server deletion endpoint and enhance existing server retrieval with API key ([600c10a](https://github.com/MissionInbox/postal/commit/600c10abe7e12fad12a0e2fb6c02d27c6f42a6c8))
+
 ## [3.18.0](https://github.com/MissionInbox/postal/compare/3.17.0...3.18.0) (2025-04-22)
 
 
