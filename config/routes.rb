@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   match "/api/v1/servers/list" => "legacy_api/servers#list", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/show" => "legacy_api/servers#show", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/create" => "legacy_api/servers_public#create", via: [:get, :post, :patch, :put]
+  match "/api/v1/servers/delete" => "legacy_api/servers_public#delete", via: [:get, :post, :patch, :put]
   match "/api/v1/organizations/list" => "legacy_api/organizations#index", via: [:get, :post, :patch, :put]
   match "/api/v1/organizations/show" => "legacy_api/organizations#show", via: [:get, :post, :patch, :put]
 
