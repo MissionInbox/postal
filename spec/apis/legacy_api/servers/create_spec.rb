@@ -4,14 +4,13 @@ require "rails_helper"
 
 RSpec.describe "POST /api/v1/servers/create" do
   let!(:organization) { create(:organization) }
-  let!(:credential) { create(:credential, server: create(:server, organization: organization)) }
 
   context "with valid parameters" do
     before do
       allow_any_instance_of(Postal::MessageDB::Provisioner).to receive(:provision).and_return(true)
     end
 
-    it "creates a new server" do
+    it "creates a new server using organization UUID as authentication" do
       expect {
         post "/api/v1/servers/create", params: {
           params: {
@@ -20,8 +19,6 @@ RSpec.describe "POST /api/v1/servers/create" do
             mode: "Live",
             skip_provision_database: true
           }.to_json
-        }, headers: {
-          "X-Server-API-Key" => credential.key
         }
       }.to change { Server.count }.by(1)
         .and change { Credential.count }.by(1)
@@ -40,8 +37,6 @@ RSpec.describe "POST /api/v1/servers/create" do
     it "returns an error when organization_uuid is missing" do
       post "/api/v1/servers/create", params: {
         params: { name: "Test Server" }.to_json
-      }, headers: {
-        "X-Server-API-Key" => credential.key
       }
 
       expect(response.status).to eq(200)
@@ -52,8 +47,6 @@ RSpec.describe "POST /api/v1/servers/create" do
     it "returns an error when name is missing" do
       post "/api/v1/servers/create", params: {
         params: { organization_uuid: organization.uuid }.to_json
-      }, headers: {
-        "X-Server-API-Key" => credential.key
       }
 
       expect(response.status).to eq(200)
@@ -64,8 +57,6 @@ RSpec.describe "POST /api/v1/servers/create" do
     it "returns an error for invalid organization_uuid" do
       post "/api/v1/servers/create", params: {
         params: { organization_uuid: "invalid-uuid", name: "Test Server" }.to_json
-      }, headers: {
-        "X-Server-API-Key" => credential.key
       }
 
       expect(response.status).to eq(200)
