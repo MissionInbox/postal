@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.15.0](https://github.com/MissionInbox/postal/compare/3.14.0...3.15.0) (2025-04-22)
+
+
+### Features
+
+* **spf:** add support for custom IP addresses in SPF records ([a626bb6](https://github.com/MissionInbox/postal/commit/a626bb6933194f3581caa5f459c9b9ceaad264f0))
+
 ## [3.14.0](https://github.com/MissionInbox/postal/compare/3.13.0...3.14.0) (2025-04-21)
 
 
