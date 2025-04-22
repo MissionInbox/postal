@@ -97,5 +97,64 @@ module LegacyAPI
       
       render_success(server: server_data)
     end
+    
+    def create
+      # Get the parameters
+      org_uuid = api_params["organization_uuid"]
+      name = api_params["name"]
+      
+      # Validate parameters
+      if org_uuid.blank? || name.blank?
+        render_parameter_error("organization_uuid and name are required")
+        return
+      end
+      
+      # Find the organization
+      organization = Organization.present.find_by_uuid(org_uuid)
+      if organization.nil?
+        render_error "InvalidOrganization", message: "The organization could not be found with the provided UUID"
+        return
+      end
+      
+      # Check permission (only allow if credential's organization matches or has admin access)
+      unless @current_credential.server.organization == organization || @current_credential.user&.admin?
+        render_error "AccessDenied", message: "You don't have permission to create servers for this organization"
+        return
+      end
+      
+      # Create the server
+      server = organization.servers.build(
+        name: name,
+        mode: api_params["mode"] || "Live",
+        ip_pool_id: api_params["ip_pool_id"],
+        # Add optional parameters as needed
+        privacy_mode: api_params["privacy_mode"] || false
+      )
+      
+      if server.save
+        # Provision the database if needed
+        unless api_params["skip_provision_database"]
+          server.message_db.provisioner.provision
+        end
+        
+        # Return the new server details
+        render_success(
+          server: {
+            uuid: server.uuid,
+            name: server.name,
+            permalink: server.permalink,
+            mode: server.mode,
+            created_at: server.created_at,
+            organization: {
+              uuid: organization.uuid,
+              name: organization.name,
+              permalink: organization.permalink
+            }
+          }
+        )
+      else
+        render_error "ValidationError", message: "The server could not be created", errors: server.errors.full_messages
+      end
+    end
   end
 end
