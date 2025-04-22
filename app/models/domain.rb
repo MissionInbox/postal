@@ -104,7 +104,23 @@ class Domain < ApplicationRecord
   end
 
   def spf_record
-    "v=spf1 a mx include:#{Postal::Config.dns.spf_include} ~all"
+    # Check if we have specific IP addresses configured
+    if Postal::Config.dns.spf_ips.present?
+      # Build SPF record with specific IP addresses
+      ip_mechanisms = Postal::Config.dns.spf_ips.map do |ip|
+        if ip.include?(":")
+          "ip6:#{ip}"  # IPv6 format
+        else
+          "ip4:#{ip}"  # IPv4 format
+        end
+      end
+      
+      # Return the SPF record with IP mechanisms
+      "v=spf1 #{ip_mechanisms.join(' ')} ~all"
+    else
+      # Fall back to the default include mechanism
+      "v=spf1 a mx include:#{Postal::Config.dns.spf_include} ~all"
+    end
   end
 
   def dkim_record

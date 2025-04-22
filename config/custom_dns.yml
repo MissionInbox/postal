@@ -1,0 +1,13 @@
+# Custom DNS Configuration
+# 
+# This file provides custom DNS settings for Postal
+
+dns:
+  # Use IP addresses in SPF records instead of include mechanism
+  # Add your server IP addresses here
+  spf_ips:
+    - 192.0.2.1  # Replace with your actual IP
+    - 192.0.2.2  # Replace with your actual IP
+  
+  # Use "bounces" prefix for return path domains
+  custom_return_path_prefix: "bounces"
