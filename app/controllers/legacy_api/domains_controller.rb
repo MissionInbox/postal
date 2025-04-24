@@ -70,6 +70,44 @@ module LegacyAPI
       records
     end
     
+    def delete
+      # Extract required parameters from URL parameters and api_params as fallback
+      domain_name = params[:name] || api_params["name"]
+      
+      # Validate parameters
+      if domain_name.blank?
+        render_parameter_error("name is required as a URL parameter or in the request body")
+        return
+      end
+      
+      # URL-decode the domain name if needed
+      domain_name = URI.decode_www_form_component(domain_name) rescue domain_name
+      
+      # Log information to help debug (remove in production)
+      Rails.logger.info "Searching for domain: '#{domain_name}' in server: #{@current_credential.server.name}"
+      Rails.logger.info "Available domains: #{@current_credential.server.domains.pluck(:name).join(', ')}"
+      
+      # Find the domain - case-insensitive search
+      domain = @current_credential.server.domains.where("LOWER(name) = LOWER(?)", domain_name).first
+      if domain.nil?
+        render_error "InvalidDomain", message: "The domain could not be found with the provided name", name: domain_name
+        return
+      end
+      
+      # Delete the domain
+      if domain.destroy
+        render_success(
+          deleted: true,
+          domain: {
+            uuid: domain.uuid,
+            name: domain.name
+          }
+        )
+      else
+        render_error "DeletionError", message: "The domain could not be deleted"
+      end
+    end
+    
     def create
       # Extract required parameters
       domain_name = api_params["name"]
