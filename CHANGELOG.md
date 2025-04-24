@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.20.0](https://github.com/MissionInbox/postal/compare/3.19.0...3.20.0) (2025-04-24)
+
+
+### Features
+
+* **domains:** add delete endpoint for domains with parameter validation ([3c76a6c](https://github.com/MissionInbox/postal/commit/3c76a6cfbfab710b81a0340ce09be84dc792b85a))
+
 ## [3.19.0](https://github.com/MissionInbox/postal/compare/3.18.0...3.19.0) (2025-04-22)
 
 
