@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.21.0](https://github.com/MissionInbox/postal/compare/3.20.0...3.21.0) (2025-04-24)
+
+
+### Features
+
+* **domains:** add list endpoint for domains with pagination and filtering ([0b380ea](https://github.com/MissionInbox/postal/commit/0b380eabf93d4a69fb06b64f75b8c2d136aa9456))
+
 ## [3.20.0](https://github.com/MissionInbox/postal/compare/3.19.0...3.20.0) (2025-04-24)
 
 
