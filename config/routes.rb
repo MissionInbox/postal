@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   match "/api/v1/domains/dns_records" => "legacy_api/domains#dns_records", via: [:get, :post, :patch, :put]
   match "/api/v1/domains/delete/:name" => "legacy_api/domains#delete", via: [:get, :post, :patch, :put, :delete]
   match "/api/v1/domains/delete" => "legacy_api/domains#delete", via: [:get, :post, :patch, :put, :delete]
+  match "/api/v1/domains/list" => "legacy_api/domains#list", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/list" => "legacy_api/servers#list", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/show" => "legacy_api/servers#show", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/create" => "legacy_api/servers_public#create", via: [:get, :post, :patch, :put]

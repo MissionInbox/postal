@@ -2,6 +2,8 @@
 
 module LegacyAPI
   class DomainsController < BaseController
+    DEFAULT_PER_PAGE = 30
+    MAX_PER_PAGE = 100
     # Helper method to get DNS records for a domain
     private def get_dns_records_for_domain(domain)
       records = []
@@ -68,6 +70,76 @@ module LegacyAPI
       end
       
       records
+    end
+    
+    def list
+      # Get pagination parameters from API params
+      page = (api_params["page"] || 1).to_i
+      per_page = (api_params["per_page"] || DEFAULT_PER_PAGE).to_i
+      
+      # Limit per_page to prevent excessive queries
+      per_page = [per_page, MAX_PER_PAGE].min
+      
+      # Apply filters if provided
+      domains_scope = @current_credential.server.domains
+      
+      # Filter by verified status if specified
+      if api_params.key?("verified")
+        verified = api_params["verified"].to_s.downcase == "true"
+        domains_scope = verified ? domains_scope.where.not(verified_at: nil) : domains_scope.where(verified_at: nil)
+      end
+      
+      # Filter by name if search term is provided
+      if api_params["search"].present?
+        search_term = "%#{api_params["search"]}%"
+        domains_scope = domains_scope.where("name LIKE ?", search_term)
+      end
+      
+      # Get total count before pagination
+      total_count = domains_scope.count
+      
+      # Apply ordering - default to newest first
+      order_by = api_params["order_by"] || "created_at"
+      order_dir = (api_params["order_direction"] || "desc").upcase == "ASC" ? "ASC" : "DESC"
+      
+      # Only allow ordering by valid columns
+      valid_columns = %w[name created_at verified_at]
+      order_by = "created_at" unless valid_columns.include?(order_by)
+      
+      domains_scope = domains_scope.order("#{order_by} #{order_dir}")
+      
+      # Apply pagination
+      domains = domains_scope.limit(per_page).offset((page - 1) * per_page)
+      
+      # Calculate pagination details
+      total_pages = (total_count.to_f / per_page).ceil
+      
+      # Format domain data
+      domain_data = domains.map do |domain|
+        {
+          uuid: domain.uuid,
+          name: domain.name,
+          verified: domain.verified?,
+          verified_at: domain.verified_at,
+          verification_method: domain.verification_method,
+          dns_checked_at: domain.dns_checked_at,
+          created_at: domain.created_at,
+          updated_at: domain.updated_at,
+          outgoing: domain.outgoing,
+          incoming: domain.incoming
+        }
+      end
+      
+      # Render paginated response
+      render_success(
+        domains: domain_data,
+        pagination: {
+          current_page: page,
+          per_page: per_page,
+          total_pages: total_pages,
+          total_count: total_count
+        }
+      )
     end
     
     def delete
