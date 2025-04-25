@@ -49,6 +49,7 @@ Rails.application.routes.draw do
         get :incoming, on: :collection
         get :outgoing, on: :collection
         get :held, on: :collection
+        delete :purge_held_messages, on: :collection
         get :activity, on: :member
         get :plain, on: :member
         get :html, on: :member
@@ -62,6 +63,7 @@ Rails.application.routes.draw do
         post :cancel_hold, on: :member
         get :suppressions, on: :collection
         delete :remove_suppression, on: :collection
+        delete :remove_all_suppressions, on: :collection
         delete :remove_from_queue, on: :member
         get :deliveries, on: :member
       end
@@ -72,6 +74,7 @@ Rails.application.routes.draw do
       get :limits, on: :member
       get :retention, on: :member
       get :queue, on: :member
+      delete :purge_queued_messages, on: :member
       get :spam, on: :member
       get :delete, on: :member
       get "help/outgoing" => "help#outgoing"

@@ -18,6 +18,7 @@
       All messages that pass through your mail server first enter this queue. Any messages
       that cannot be delivered immediately remain in the queue until they can be successfully
       delivered or we give up on them.
+      = link_to "Purge All Queued Messages", purge_queued_messages_organization_server_path(organization, @server), class: "button button--small button--danger u-margin-l5", method: :delete, data: { confirm: "Are you sure you want to purge ALL queued messages? This action cannot be undone and will prevent any pending messages from being delivered." }
     = render 'messages/list', :messages => @messages_with_message
 
     = paginate @messages
