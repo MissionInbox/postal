@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.23.0](https://github.com/MissionInbox/postal/compare/3.22.1...3.23.0) (2025-04-25)
+
+
+### Features
+
+* **messages:** update purge action to cancel and release held messages with improved messaging ([81f4785](https://github.com/MissionInbox/postal/commit/81f4785508751877de4e674f10f5f89e24449961))
+
 ## [3.22.1](https://github.com/MissionInbox/postal/compare/3.22.0...3.22.1) (2025-04-25)
 
 
