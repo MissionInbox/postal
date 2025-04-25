@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.22.1](https://github.com/MissionInbox/postal/compare/3.22.0...3.22.1) (2025-04-25)
+
+
+### Bug Fixes
+
+* **database:** ensure WHERE clause is only appended if present in delete method ([ec81016](https://github.com/MissionInbox/postal/commit/ec81016bb1391919a1c0c77ba91d01e7841036ca))
+
 ## [3.22.0](https://github.com/MissionInbox/postal/compare/3.21.0...3.22.0) (2025-04-25)
 
 
