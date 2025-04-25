@@ -178,16 +178,17 @@ class MessagesController < ApplicationController
     messages = @server.message_db.messages(where: { held: true })
     count = 0
     
-    # Cancel hold for each message
+    # Cancel hold for each message and add to queue
     messages.each do |message|
       message.cancel_hold
+      message.add_to_message_queue(manual: true)
       count += 1
     end
     
     if count > 0
-      flash[:notice] = "#{count} held messages have been purged."
+      flash[:notice] = "#{count} held messages have been canceled and released for delivery."
     else
-      flash[:notice] = "No held messages to purge."
+      flash[:notice] = "No held messages to cancel and release."
     end
     redirect_to held_organization_server_messages_path(organization, @server)
   end
