@@ -261,7 +261,9 @@ module Postal
       #
       def delete(table, options = {})
         sql_query = "DELETE FROM `#{database_name}`.`#{table}`"
-        sql_query << (" " + build_where_string(options[:where], " AND "))
+        if options[:where].present?
+          sql_query << (" " + build_where_string(options[:where], " AND "))
+        end
         with_mysql do |mysql|
           query_on_connection(mysql, sql_query)
           mysql.affected_rows
