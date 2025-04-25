@@ -41,6 +41,10 @@ module Postal
         @database.delete("suppressions", where: { keep_until: { less_than: Time.now.to_f } }) || 0
       end
 
+      def remove_all
+        @database.delete("suppressions") || 0
+      end
+
     end
   end
 end

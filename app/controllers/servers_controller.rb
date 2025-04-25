@@ -82,6 +82,16 @@ class ServersController < ApplicationController
     @messages = @server.queued_messages.order(id: :desc).page(params[:page]).includes(:ip_address)
     @messages_with_message = @messages.include_message
   end
+  
+  def purge_queued_messages
+    count = @server.queued_messages.where("locked_at IS NULL OR locked_at < ?", 1.hour.ago).destroy_all.count
+    if count > 0
+      flash[:notice] = "#{count} queued messages have been purged."
+    else
+      flash[:notice] = "No queued messages to purge."
+    end
+    redirect_to queue_organization_server_path(organization, @server)
+  end
 
   def suspend
     @server.suspend(params[:reason])

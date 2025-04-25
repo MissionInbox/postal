@@ -162,6 +162,35 @@ class MessagesController < ApplicationController
     end
     redirect_to suppressions_organization_server_messages_path(organization, @server)
   end
+  
+  def remove_all_suppressions
+    count = @server.message_db.suppression_list.remove_all
+    if count > 0
+      flash[:notice] = "All #{count} entries have been removed from the suppression list."
+    else
+      flash[:notice] = "The suppression list was already empty."
+    end
+    redirect_to suppressions_organization_server_messages_path(organization, @server)
+  end
+  
+  def purge_held_messages
+    # Find all held messages
+    messages = @server.message_db.messages(where: { held: true })
+    count = 0
+    
+    # Cancel hold for each message
+    messages.each do |message|
+      message.cancel_hold
+      count += 1
+    end
+    
+    if count > 0
+      flash[:notice] = "#{count} held messages have been purged."
+    else
+      flash[:notice] = "No held messages to purge."
+    end
+    redirect_to held_organization_server_messages_path(organization, @server)
+  end
 
   def activity
     @entries = @message.activity_entries
