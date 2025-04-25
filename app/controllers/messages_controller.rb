@@ -180,7 +180,6 @@ class MessagesController < ApplicationController
     
     # Cancel hold for each message and add to queue
     messages.each do |message|
-      message.cancel_hold
       message.add_to_message_queue(manual: true)
       count += 1
     end
