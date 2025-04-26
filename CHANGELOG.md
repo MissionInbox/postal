@@ -2,6 +2,18 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.24.0](https://github.com/MissionInbox/postal/compare/3.23.0...3.24.0) (2025-04-26)
+
+
+### Features
+
+* **domains:** add search functionality to domain list with improved layout ([46240ce](https://github.com/MissionInbox/postal/commit/46240ce785a41ab838110ef632790c8187406c9a))
+
+
+### Bug Fixes
+
+* **messages:** remove redundant cancel_hold call before adding messages to queue ([d4965a7](https://github.com/MissionInbox/postal/commit/d4965a7db055c761ea31c0243c285e41ea7c45ee))
+
 ## [3.23.0](https://github.com/MissionInbox/postal/compare/3.22.1...3.23.0) (2025-04-25)
 
 
