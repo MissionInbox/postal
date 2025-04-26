@@ -27,16 +27,49 @@
         .searchForm__input
           = text_field_tag :search, @search, class: 'input input--text', placeholder: "Search domains..."
           = submit_tag "Search", class: 'button button--small'
-        - if @search.present?
+        - if @search.present? || @filter.present?
           .searchForm__reset
-            = link_to "Clear", [organization, @server, :domains], class: 'u-link'
+            = link_to "Clear all filters", [organization, @server, :domains], class: 'u-link'
+            
+    .pageContent__filters
+      %ul.filterTabs
+        %li.filterTabs__item
+          = link_to "All Domains", url_for(params.permit(:search).merge(filter: nil)), class: ['filterTabs__link', @filter.nil? ? 'is-active' : '']
+        %li.filterTabs__item  
+          = link_to "Unverified", url_for(params.permit(:search).merge(filter: 'unverified')), class: ['filterTabs__link', @filter == 'unverified' ? 'is-active' : '']
+        %li.filterTabs__item
+          = link_to "With Issues", url_for(params.permit(:search).merge(filter: 'issues')), class: ['filterTabs__link', @filter == 'issues' ? 'is-active' : '']
+        %li.filterTabs__item
+          = link_to "Verified", url_for(params.permit(:search).merge(filter: 'verified')), class: ['filterTabs__link', @filter == 'verified' ? 'is-active' : '']
 
   - if @domains.empty?
     .noData.noData--clean
-      %h2.noData__title There are no domains for this server.
-      %p.noData__text
-        To send & receive messages you need to add & verify the domain you wish to send/receive
-        messages to/from. Add your domain below to get started.
+      - if @search.present?
+        %h2.noData__title No domains found matching "#{@search}".
+        %p.noData__text
+          Try a different search term or clear your search to see all domains.
+      - elsif @filter.present?
+        - case @filter
+        - when 'unverified'
+          %h2.noData__title No unverified domains found.
+          %p.noData__text
+            All domains have been verified! 
+            = link_to "View all domains", [organization, @server, :domains], class: 'u-link'
+        - when 'issues'
+          %h2.noData__title No domains with DNS issues found.
+          %p.noData__text
+            All domains have proper DNS configuration! 
+            = link_to "View all domains", [organization, @server, :domains], class: 'u-link'
+        - when 'verified'
+          %h2.noData__title No verified domains found.
+          %p.noData__text
+            You need to verify your domains before you can use them.
+            = link_to "View all domains", [organization, @server, :domains], class: 'u-link'
+      - else
+        %h2.noData__title There are no domains for this server.
+        %p.noData__text
+          To send & receive messages you need to add & verify the domain you wish to send/receive
+          messages to/from. Add your domain below to get started.
 
   - else
     - if @total_pages > 1

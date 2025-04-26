@@ -19,6 +19,7 @@ class DomainsController < ApplicationController
     @page = (params[:page] || 1).to_i
     @per_page = 30
     @search = params[:search]
+    @filter = params[:filter]
     
     if @server
       @domains_scope = @server.domains
@@ -29,6 +30,16 @@ class DomainsController < ApplicationController
     # Apply search if provided
     if @search.present?
       @domains_scope = @domains_scope.where("name LIKE ?", "%#{@search}%")
+    end
+    
+    # Apply filter if provided
+    case @filter
+    when 'unverified'
+      @domains_scope = @domains_scope.where(verified_at: nil)
+    when 'issues'
+      @domains_scope = @domains_scope.where("dkim_status != 'OK' OR spf_status != 'OK' OR return_path_status != 'OK'")
+    when 'verified'
+      @domains_scope = @domains_scope.where.not(verified_at: nil)
     end
     
     # Always sort by name
