@@ -18,12 +18,21 @@ class DomainsController < ApplicationController
   def index
     @page = (params[:page] || 1).to_i
     @per_page = 30
+    @search = params[:search]
     
     if @server
-      @domains_scope = @server.domains.order(:name)
+      @domains_scope = @server.domains
     else
-      @domains_scope = organization.domains.order(:name)
+      @domains_scope = organization.domains
     end
+    
+    # Apply search if provided
+    if @search.present?
+      @domains_scope = @domains_scope.where("name LIKE ?", "%#{@search}%")
+    end
+    
+    # Always sort by name
+    @domains_scope = @domains_scope.order(:name)
     
     @total_domains = @domains_scope.count
     @total_pages = (@total_domains.to_f / @per_page).ceil
@@ -117,16 +126,18 @@ class DomainsController < ApplicationController
   
   def verify_all
     if @server
-      @domains = @server.domains.where(dns_checked_at: nil).to_a
+      # Include domains with missing or incomplete DNS verification
+      @domains = @server.domains.where("dns_checked_at IS NULL OR dkim_status != 'OK' OR spf_status != 'OK' OR return_path_status != 'OK'").to_a
     else
-      @domains = organization.domains.where(dns_checked_at: nil).to_a
+      @domains = organization.domains.where("dns_checked_at IS NULL OR dkim_status != 'OK' OR spf_status != 'OK' OR return_path_status != 'OK'").to_a
     end
     
     verified_count = 0
     error_count = 0
     
     @domains.each do |domain|
-      if domain.verification_method == "DNS"
+      # Only check domains that are already verified or use DNS verification
+      if domain.verified? || domain.verification_method == "DNS"
         begin
           if domain.check_dns(:manual)
             verified_count += 1
@@ -146,7 +157,7 @@ class DomainsController < ApplicationController
       message += " #{error_count} #{'domain'.pluralize(error_count)} failed verification." if error_count > 0
       redirect_to_with_json [organization, @server, :domains], notice: message
     else
-      redirect_to_with_json [organization, @server, :domains], alert: "No domains could be verified. Make sure you've added the TXT records correctly."
+      redirect_to_with_json [organization, @server, :domains], alert: "No domains could be verified. Make sure you've added the DNS records correctly."
     end
   end
   
