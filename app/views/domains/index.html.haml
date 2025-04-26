@@ -16,10 +16,20 @@
   = render 'organizations/nav', :active_nav => :domains
 
 .pageContent.pageContent--compact
-  .u-center.u-margin
-    = link_to "Add new domain", [:new, organization, @server, :domain], :class => "button button--positive"
-    = link_to "Verify All", [:verify_all, organization, @server, :domains], :method => :post, :class => "button button--neutral", :data => {:confirm => "This will attempt to verify all unverified domains with DNS verification method. Continue?"}
-    = link_to "Export as CSV", [:export, organization, @server, :domains], :class => "button button--neutral"
+  .u-margin
+    .u-center.u-margin-2x
+      = link_to "Add new domain", [:new, organization, @server, :domain], :class => "button button--positive"
+      = link_to "Verify All", [:verify_all, organization, @server, :domains], :method => :post, :class => "button button--neutral", :data => {:confirm => "This will attempt to verify all domains with DNS records that are not fully set up. Continue?"}
+      = link_to "Export as CSV", [:export, organization, @server, :domains], :class => "button button--neutral"
+    
+    .pageContent__searchForm
+      = form_tag [organization, @server, :domains], method: :get, class: 'searchForm' do
+        .searchForm__input
+          = text_field_tag :search, @search, class: 'input input--text', placeholder: "Search domains..."
+          = submit_tag "Search", class: 'button button--small'
+        - if @search.present?
+          .searchForm__reset
+            = link_to "Clear", [organization, @server, :domains], class: 'u-link'
 
   - if @domains.empty?
     .noData.noData--clean
