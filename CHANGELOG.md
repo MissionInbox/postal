@@ -84,6 +84,12 @@ This file contains all the latest changes and updates to Postal.
 
 * **spf:** add support for custom IP addresses in SPF records ([a626bb6](https://github.com/MissionInbox/postal/commit/a626bb6933194f3581caa5f459c9b9ceaad264f0))
 
+## [Unreleased]
+
+### Features
+
+* **api:** add support for custom Message-ID in send/message API endpoint
+
 ## [3.14.0](https://github.com/MissionInbox/postal/compare/3.13.0...3.14.0) (2025-04-21)
 
 

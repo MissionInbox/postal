@@ -191,6 +191,17 @@ RSpec.describe "Legacy Send API", type: :request do
               "bcc@example.com" => { "id" => kind_of(Integer), "token" => /\A[a-zA-Z0-9]{16}\z/ }
             })
           end
+          
+          context "when a custom message_id is provided" do
+            let(:params) { default_params.merge(message_id: "custom-id-123@example.com") }
+            
+            it "uses the provided message_id" do
+              parsed_body = JSON.parse(response.body)
+              message_id = parsed_body["data"]["messages"]["test@example.com"]["id"]
+              message = server.message(message_id)
+              expect(message.message_id).to eq "custom-id-123@example.com"
+            end
+          end
 
           it "adds an appropriate received header" do
             parsed_body = JSON.parse(response.body)
