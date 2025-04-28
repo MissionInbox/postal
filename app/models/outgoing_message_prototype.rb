@@ -19,6 +19,7 @@ class OutgoingMessagePrototype
   attr_accessor :credential
   attr_accessor :bounce
   attr_accessor :priority
+  attr_accessor :message_id
 
   def initialize(server, ip, source_type, attributes)
     @server = server
@@ -26,13 +27,11 @@ class OutgoingMessagePrototype
     @source_type = source_type
     @custom_headers = {}
     @attachments = []
-    @message_id = "#{SecureRandom.uuid}@#{Postal::Config.dns.return_path_domain}"
     attributes.each do |key, value|
       instance_variable_set("@#{key}", value)
     end
+    @message_id ||= "#{SecureRandom.uuid}@#{Postal::Config.dns.return_path_domain}"
   end
-
-  attr_reader :message_id
 
   def from_address
     Postal::Helpers.strip_name_from_address(@from)
