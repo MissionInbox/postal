@@ -2,6 +2,88 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.24.0](https://github.com/MissionInbox/postal/compare/3.23.0...3.24.0) (2025-04-26)
+
+
+### Features
+
+* **domains:** add search functionality to domain list with improved layout ([46240ce](https://github.com/MissionInbox/postal/commit/46240ce785a41ab838110ef632790c8187406c9a))
+
+
+### Bug Fixes
+
+* **messages:** remove redundant cancel_hold call before adding messages to queue ([d4965a7](https://github.com/MissionInbox/postal/commit/d4965a7db055c761ea31c0243c285e41ea7c45ee))
+
+## [3.23.0](https://github.com/MissionInbox/postal/compare/3.22.1...3.23.0) (2025-04-25)
+
+
+### Features
+
+* **messages:** update purge action to cancel and release held messages with improved messaging ([81f4785](https://github.com/MissionInbox/postal/commit/81f4785508751877de4e674f10f5f89e24449961))
+
+## [3.22.1](https://github.com/MissionInbox/postal/compare/3.22.0...3.22.1) (2025-04-25)
+
+
+### Bug Fixes
+
+* **database:** ensure WHERE clause is only appended if present in delete method ([ec81016](https://github.com/MissionInbox/postal/commit/ec81016bb1391919a1c0c77ba91d01e7841036ca))
+
+## [3.22.0](https://github.com/MissionInbox/postal/compare/3.21.0...3.22.0) (2025-04-25)
+
+
+### Features
+
+* **messages:** add endpoints to purge held and queued messages, and remove all suppressions ([1ce3ee6](https://github.com/MissionInbox/postal/commit/1ce3ee618aa760df3cd77cdb9f68c52770163c7d))
+
+## [3.21.0](https://github.com/MissionInbox/postal/compare/3.20.0...3.21.0) (2025-04-24)
+
+
+### Features
+
+* **domains:** add list endpoint for domains with pagination and filtering ([0b380ea](https://github.com/MissionInbox/postal/commit/0b380eabf93d4a69fb06b64f75b8c2d136aa9456))
+
+## [3.20.0](https://github.com/MissionInbox/postal/compare/3.19.0...3.20.0) (2025-04-24)
+
+
+### Features
+
+* **domains:** add delete endpoint for domains with parameter validation ([3c76a6c](https://github.com/MissionInbox/postal/commit/3c76a6cfbfab710b81a0340ce09be84dc792b85a))
+
+## [3.19.0](https://github.com/MissionInbox/postal/compare/3.18.0...3.19.0) (2025-04-22)
+
+
+### Features
+
+* **servers:** add server deletion endpoint and enhance existing server retrieval with API key ([600c10a](https://github.com/MissionInbox/postal/commit/600c10abe7e12fad12a0e2fb6c02d27c6f42a6c8))
+
+## [3.18.0](https://github.com/MissionInbox/postal/compare/3.17.0...3.18.0) (2025-04-22)
+
+
+### Features
+
+* **servers:** update server creation endpoint to use public controller and improve test descriptions ([90248c9](https://github.com/MissionInbox/postal/commit/90248c94ace835e0623c7b7e341b8582fbdf2dce))
+
+## [3.17.0](https://github.com/MissionInbox/postal/compare/3.16.0...3.17.0) (2025-04-22)
+
+
+### Features
+
+* **servers:** create default API credential for new servers and include in response ([476c063](https://github.com/MissionInbox/postal/commit/476c0639e684a50044f9595b3ae9b3f5ac538eeb))
+
+## [3.16.0](https://github.com/MissionInbox/postal/compare/3.15.0...3.16.0) (2025-04-22)
+
+
+### Features
+
+* **servers:** add create endpoint for servers with organization validation ([219e64c](https://github.com/MissionInbox/postal/commit/219e64c25f18158830aba069a256723c968b86d5))
+
+## [3.15.0](https://github.com/MissionInbox/postal/compare/3.14.0...3.15.0) (2025-04-22)
+
+
+### Features
+
+* **spf:** add support for custom IP addresses in SPF records ([a626bb6](https://github.com/MissionInbox/postal/commit/a626bb6933194f3581caa5f459c9b9ceaad264f0))
+
 ## [Unreleased]
 
 ### Features
