@@ -13,4 +13,9 @@
             %p.sidebarServerList__mode.label{:class => "label--serverStatus-#{server.status.underscore}"}= t("server_statuses.#{server.status.underscore}")
             %p.sidebarServerList__title= server.name
             %p.sidebarServerList__quantity #{number_with_precision server.message_rate, :precision => 2} messages/minute
+            - total, unverified, bad_dns = server.domain_stats
+            - verified_with_issues = unverified + bad_dns
+            - fully_verified = total - verified_with_issues
+            %p.largeList__subText #{total} domains (#{fully_verified} verified, #{verified_with_issues} with issues)
+
       %p.sidebar__new= link_to "Build a new mail server", [:new, organization, :server]
