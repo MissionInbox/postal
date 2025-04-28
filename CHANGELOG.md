@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.25.0](https://github.com/MissionInbox/postal/compare/3.24.0...3.25.0) (2025-04-28)
+
+
+### Features
+
+* **api:** add support for custom Message-ID in send/message API endpoint ([4c4192b](https://github.com/MissionInbox/postal/commit/4c4192b3f07f4e4abb4cbaef1dd4b789cfcfb5f9))
+* **domains:** add filtering options to domain list with updated UI elements ([5b3f5c8](https://github.com/MissionInbox/postal/commit/5b3f5c84a7fb3e0b50bfebd6fafb418f76194234))
+
 ## [3.24.0](https://github.com/MissionInbox/postal/compare/3.23.0...3.24.0) (2025-04-26)
 
 
