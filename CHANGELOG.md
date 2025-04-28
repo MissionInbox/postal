@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.26.0](https://github.com/MissionInbox/postal/compare/3.25.0...3.26.0) (2025-04-28)
+
+
+### Features
+
+* **domains:** display domain statistics including total, verified, and issues ([ebdf0e3](https://github.com/MissionInbox/postal/commit/ebdf0e3a53a217313973a2e55646202e2a1b2d1f))
+
 ## [3.25.0](https://github.com/MissionInbox/postal/compare/3.24.0...3.25.0) (2025-04-28)
 
 
