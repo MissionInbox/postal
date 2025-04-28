@@ -27,6 +27,10 @@
               %span.largeList__rightLabel.label{:class => "label--serverStatus-#{server.status.underscore}"}= t("server_statuses.#{server.status.underscore}")
               %p= server.name
               %p.largeList__subText #{number_with_precision server.message_rate, :precision => 2} messages/minute
+              - total, unverified, bad_dns = server.domain_stats
+              - verified_with_issues = unverified + bad_dns
+              - fully_verified = total - verified_with_issues
+              %p.largeList__subText #{total} domains (#{fully_verified} verified, #{verified_with_issues} with issues)
       .js-searchable__empty.is-hidden
         .noData.noData--clean
           %p.noData__title No servers were found...
