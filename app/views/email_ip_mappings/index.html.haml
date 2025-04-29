@@ -1,0 +1,34 @@
+- page_title << "Email to IP Mappings" << @server.name
+
+= render "servers/sidebar", :active_server => @server
+= render "servers/header", :active_server => @server
+
+.pageContent.pageContent--compact
+  - if @mappings.empty?
+    .noData.noData--clean
+      %p.noData__text No email to IP mappings have been added to this server yet.
+      .noData__buttons
+        = link_to "Add your first mapping", new_organization_server_email_ip_mapping_path(organization, @server), :class => "button button--positive"
+  - else
+    .p{ style: "margin-bottom:15px" }
+      = link_to "Add new mapping", new_organization_server_email_ip_mapping_path(organization, @server), :class => "button button--positive"
+      %p.pageContent__subHead
+        = @mappings.size
+        = @mappings.size == 1 ? "mapping" : "mappings"
+      
+    %table.dataTable.dataTable--noOverflow
+      %thead
+        %tr
+          %th{:width => "30%"} Email Address
+          %th{:width => "30%"} IP Address
+          %th{:width => "30%"} IP Pool
+          %th{:width => "10%"}
+      %tbody
+        - for mapping in @mappings
+          %tr
+            %td= mapping.email_address
+            %td= mapping.ip_address.ipv4
+            %td= mapping.ip_address.ip_pool.name
+            %td.u-align-right
+              = link_to "Edit", edit_organization_server_email_ip_mapping_path(organization, @server, mapping), :class => "button button--small"
+              = link_to "Delete", organization_server_email_ip_mapping_path(organization, @server, mapping), :class => "button button--small button--danger", :method => :delete, :data => {:confirm => "Are you sure you wish to remove this mapping?"}

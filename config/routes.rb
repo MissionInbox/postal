@@ -71,6 +71,7 @@ Rails.application.routes.draw do
         get :history, on: :collection
         get "history/:uuid", on: :collection, action: "history_request", as: "history_request"
       end
+      resources :email_ip_mappings
       get :limits, on: :member
       get :retention, on: :member
       get :queue, on: :member

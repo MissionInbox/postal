@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_11_205229) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_29_000001) do
   create_table "additional_route_endpoints", id: :integer, charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "route_id"
     t.string "endpoint_type"
@@ -101,6 +101,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_11_205229) do
     t.boolean "use_for_any"
     t.index ["server_id"], name: "index_domains_on_server_id"
     t.index ["uuid"], name: "index_domains_on_uuid", length: 8
+  end
+
+  create_table "email_ip_mappings", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "server_id", null: false
+    t.string "email_address", null: false
+    t.integer "ip_address_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ip_address_id"], name: "fk_rails_4b6b5d59f6"
+    t.index ["server_id", "email_address"], name: "index_email_ip_mappings_on_server_id_and_email_address", unique: true
   end
 
   create_table "http_endpoints", id: :integer, charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -196,8 +206,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_11_205229) do
     t.integer "route_id"
     t.boolean "manual", default: false
     t.string "batch_key"
+    t.integer "priority", default: 0
     t.index ["domain"], name: "index_queued_messages_on_domain", length: 8
     t.index ["message_id"], name: "index_queued_messages_on_message_id"
+    t.index ["priority"], name: "index_queued_messages_on_priority"
     t.index ["server_id"], name: "index_queued_messages_on_server_id"
   end
 
@@ -380,4 +392,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_11_205229) do
     t.index ["role"], name: "index_worker_roles_on_role", unique: true
   end
 
+  add_foreign_key "email_ip_mappings", "ip_addresses"
+  add_foreign_key "email_ip_mappings", "servers"
 end

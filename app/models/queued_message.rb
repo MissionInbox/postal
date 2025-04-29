@@ -5,24 +5,26 @@
 # Table name: queued_messages
 #
 #  id            :integer          not null, primary key
-#  server_id     :integer
-#  message_id    :integer
+#  attempts      :integer          default(0)
+#  batch_key     :string(255)
 #  domain        :string(255)
-#  locked_by     :string(255)
 #  locked_at     :datetime
+#  locked_by     :string(255)
+#  manual        :boolean          default(FALSE)
+#  priority      :integer          default(0)
 #  retry_after   :datetime
 #  created_at    :datetime
 #  updated_at    :datetime
 #  ip_address_id :integer
-#  attempts      :integer          default(0)
+#  message_id    :integer
 #  route_id      :integer
-#  manual        :boolean          default(FALSE)
-#  batch_key     :string(255)
+#  server_id     :integer
 #
 # Indexes
 #
 #  index_queued_messages_on_domain      (domain)
 #  index_queued_messages_on_message_id  (message_id)
+#  index_queued_messages_on_priority    (priority)
 #  index_queued_messages_on_server_id   (server_id)
 #
 
@@ -53,7 +55,17 @@ class QueuedMessage < ApplicationRecord
   def allocate_ip_address
     return unless Postal.ip_pools?
     return if message.nil?
-
+    
+    # Check for email-to-IP mapping first
+    if message.mail_from && server
+      mapping = server.email_ip_mappings.find_by(email_address: message.mail_from)
+      if mapping&.ip_address
+        self.ip_address = mapping.ip_address
+        return
+      end
+    end
+    
+    # Regular IP pool selection if no mapping found
     pool = server.ip_pool_for_message(message)
     return if pool.nil?
 

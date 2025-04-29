@@ -17,6 +17,7 @@
 class IPAddress < ApplicationRecord
 
   belongs_to :ip_pool
+has_many :email_ip_mappings, dependent: :destroy
 
   validates :ipv4, presence: true, uniqueness: true
   validates :hostname, presence: true
