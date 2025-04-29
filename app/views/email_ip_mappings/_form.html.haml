@@ -8,5 +8,5 @@
   .fieldSet__field
     = f.label :ip_address_id, "IP Address", :class => "fieldSet__label"
     .fieldSet__input
-      = f.collection_select :ip_address_id, @server.organization.ip_pools.map(&:ip_addresses).flatten, :id, :ipv4, { :include_blank => "Please select an IP address" }, { :class => "input input--select" }
+      = f.collection_select :ip_address_id, IPAddress.all.order(:ipv4), :id, :ipv4_with_pool_name, { :include_blank => "Please select an IP address" }, { :class => "input input--select" }
       %p.fieldSet__text Select the specific IP address that should be used for this email
