@@ -11,6 +11,7 @@
 #  locked_at     :datetime
 #  locked_by     :string(255)
 #  manual        :boolean          default(FALSE)
+#  priority      :integer          default(0)
 #  retry_after   :datetime
 #  created_at    :datetime
 #  updated_at    :datetime
@@ -23,6 +24,7 @@
 #
 #  index_queued_messages_on_domain      (domain)
 #  index_queued_messages_on_message_id  (message_id)
+#  index_queued_messages_on_priority    (priority)
 #  index_queued_messages_on_server_id   (server_id)
 #
 require "rails_helper"

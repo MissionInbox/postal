@@ -1,0 +1,13 @@
+- page_title << "Add Email to IP Mapping" << @server.name
+
+= render "servers/sidebar", :active_server => @server
+= render "servers/header", :active_server => @server
+
+.pageContent.pageContent--compact
+  = form_for [organization, @server, @mapping] do |f|
+    = render 'shared/form_errors', :object => @mapping    
+    = render 'form', :f => f
+    
+    .form__submit
+      = f.submit "Add Mapping", :class => "button button--positive"
+      = link_to "Cancel", organization_server_email_ip_mappings_path(organization, @server), :class => "button button--neutral"
