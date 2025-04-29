@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.27.0](https://github.com/MissionInbox/postal/compare/3.26.0...3.27.0) (2025-04-29)
+
+
+### Features
+
+* **email-ip-mappings:** add email-to-IP mapping functionality and update UI ([9663d2e](https://github.com/MissionInbox/postal/commit/9663d2eed93e8dd9713b4eec0c4d46bb93917eb6))
+* **ip-address:** enhance IP address selection with pool name display ([fd8a4f3](https://github.com/MissionInbox/postal/commit/fd8a4f300f2c94bb6093179fd4a96cb022399263))
+
 ## [3.26.0](https://github.com/MissionInbox/postal/compare/3.25.0...3.26.0) (2025-04-28)
 
 
