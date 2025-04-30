@@ -247,16 +247,17 @@ module LegacyAPI
     
     def verify
       # Extract required parameters
-      domain_uuid = api_params["domain_id"]
+      domain_name = api_params["name"]
       
       # Validate parameters
-      if domain_uuid.blank?
-        render_parameter_error("domain_id is required")
+      if domain_name.blank?
+        render_parameter_error("name is required")
         return
       end
       
       # Find the domain
-      domain = @current_credential.server.domains.find_by_uuid(domain_uuid)
+
+      domain = @current_credential.server.domains.find_by(name: domain_name)
       if domain.nil?
         render_error "InvalidDomain", message: "The domain could not be found with the provided domain_id"
         return
