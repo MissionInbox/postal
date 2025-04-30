@@ -262,19 +262,9 @@ module LegacyAPI
         render_error "InvalidDomain", message: "The domain could not be found with the provided domain_id"
         return
       end
-      
-      # Check if domain is already verified
-      if domain.verified?
-        render_success(
-          domain: {
-            uuid: domain.uuid,
-            name: domain.name,
-            verified: domain.verified?,
-            verified_at: domain.verified_at
-          }
-        )
-        return
-      end
+
+      # Run DNS checks to get verification status of all records
+      domain.check_dns
       
       # Verify the domain
       if domain.verification_method == "DNS" && domain.verify_with_dns
@@ -283,13 +273,49 @@ module LegacyAPI
             uuid: domain.uuid,
             name: domain.name,
             verified: domain.verified?,
-            verified_at: domain.verified_at
+            verified_at: domain.verified_at,
+            dns_checks: {
+              spf: {
+                status: domain.spf_status,
+                error: domain.spf_error
+              },
+              dkim: {
+                status: domain.dkim_status,
+                error: domain.dkim_error
+              },
+              return_path: {
+                status: domain.return_path_status,
+                error: domain.return_path_error
+              },
+              mx: {
+                status: domain.mx_status,
+                error: domain.mx_error
+              }
+            }
           }
         )
       else
         render_error "VerificationFailed",
                      message: "We couldn't verify your domain. Please double check you've added the TXT record correctly.",
-                     dns_verification_string: domain.dns_verification_string
+                     dns_verification_string: domain.dns_verification_string,
+                     dns_checks: {
+                      spf: {
+                        status: domain.spf_status,
+                        error: domain.spf_error
+                      },
+                      dkim: {
+                        status: domain.dkim_status,
+                        error: domain.dkim_error
+                      },
+                      return_path: {
+                        status: domain.return_path_status,
+                        error: domain.return_path_error
+                      },
+                      mx: {
+                        status: domain.mx_status,
+                        error: domain.mx_error
+                      }
+                    }
       end
     end
     
@@ -319,6 +345,9 @@ module LegacyAPI
         return
       end
       
+      # Run DNS checks to get latest verification status
+      domain.check_dns
+      
       # Get DNS records for the domain using the helper method
       records = get_dns_records_for_domain(domain)
       
@@ -326,7 +355,25 @@ module LegacyAPI
         domain: {
           uuid: domain.uuid,
           name: domain.name,
-          verified: domain.verified?
+          verified: domain.verified?,
+          dns_checks: {
+            spf: {
+              status: domain.spf_status,
+              error: domain.spf_error
+            },
+            dkim: {
+              status: domain.dkim_status,
+              error: domain.dkim_error
+            },
+            return_path: {
+              status: domain.return_path_status,
+              error: domain.return_path_error
+            },
+            mx: {
+              status: domain.mx_status,
+              error: domain.mx_error
+            }
+          }
         },
         dns_records: records
       )
