@@ -2,6 +2,43 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.29.0](https://github.com/MissionInbox/postal/compare/3.28.0...3.29.0) (2025-04-30)
+
+
+### Features
+
+* **domains:** enhance domain verification with detailed DNS check results ([7378ebe](https://github.com/MissionInbox/postal/commit/7378ebe43a24294cb410e0653eb6da8c648781e6))
+
+## [3.28.0](https://github.com/MissionInbox/postal/compare/3.27.0...3.28.0) (2025-04-30)
+
+
+### Features
+
+* update verify domain method to work with domain name ([118e869](https://github.com/MissionInbox/postal/commit/118e8699223c1956b04e15f169d1b2842b5ddd3b))
+
+## [3.27.0](https://github.com/MissionInbox/postal/compare/3.26.0...3.27.0) (2025-04-29)
+
+
+### Features
+
+* **email-ip-mappings:** add email-to-IP mapping functionality and update UI ([9663d2e](https://github.com/MissionInbox/postal/commit/9663d2eed93e8dd9713b4eec0c4d46bb93917eb6))
+* **ip-address:** enhance IP address selection with pool name display ([fd8a4f3](https://github.com/MissionInbox/postal/commit/fd8a4f300f2c94bb6093179fd4a96cb022399263))
+
+## [3.26.0](https://github.com/MissionInbox/postal/compare/3.25.0...3.26.0) (2025-04-28)
+
+
+### Features
+
+* **domains:** display domain statistics including total, verified, and issues ([ebdf0e3](https://github.com/MissionInbox/postal/commit/ebdf0e3a53a217313973a2e55646202e2a1b2d1f))
+
+## [3.25.0](https://github.com/MissionInbox/postal/compare/3.24.0...3.25.0) (2025-04-28)
+
+
+### Features
+
+* **api:** add support for custom Message-ID in send/message API endpoint ([4c4192b](https://github.com/MissionInbox/postal/commit/4c4192b3f07f4e4abb4cbaef1dd4b789cfcfb5f9))
+* **domains:** add filtering options to domain list with updated UI elements ([5b3f5c8](https://github.com/MissionInbox/postal/commit/5b3f5c84a7fb3e0b50bfebd6fafb418f76194234))
+
 ## [3.24.0](https://github.com/MissionInbox/postal/compare/3.23.0...3.24.0) (2025-04-26)
 
 
