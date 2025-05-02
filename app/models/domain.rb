@@ -105,9 +105,11 @@ class Domain < ApplicationRecord
 
   def spf_record
     # Check if we have specific IP addresses configured
-    if Postal::Config.dns.spf_ips.present?
+    spf_ips = Postal::Config.dns.spf_ips
+    
+    if spf_ips.is_a?(Array) && spf_ips.any?
       # Build SPF record with specific IP addresses
-      ip_mechanisms = Postal::Config.dns.spf_ips.map do |ip|
+      ip_mechanisms = spf_ips.map do |ip|
         if ip.include?(":")
           "ip6:#{ip}"  # IPv6 format
         else
