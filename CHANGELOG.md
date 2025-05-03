@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.33.0](https://github.com/MissionInbox/postal/compare/3.32.0...3.33.0) (2025-05-03)
+
+
+### Features
+
+* **api:** add endpoint to retrieve IP addresses assigned to a server ([788aeaa](https://github.com/MissionInbox/postal/commit/788aeaafbab85179980f061858d8d52099022dbb))
+
 ## [3.32.0](https://github.com/MissionInbox/postal/compare/3.31.0...3.32.0) (2025-05-03)
 
 
