@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.31.0](https://github.com/MissionInbox/postal/compare/3.30.0...3.31.0) (2025-05-03)
+
+
+### Features
+
+* **domains:** make spf_ips as optional ([dab2ad1](https://github.com/MissionInbox/postal/commit/dab2ad11dacaa460d19078283a1f47f048b2171d))
+
 ## [3.30.0](https://github.com/MissionInbox/postal/compare/3.29.0...3.30.0) (2025-05-02)
 
 
