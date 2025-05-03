@@ -2,8 +2,8 @@
   .fieldSet__field
     = f.label :email_address, :class => "fieldSet__label"
     .fieldSet__input
-      = f.text_field :email_address, :class => "input input--text", :autofocus => true, :placeholder => "e.g. user@example.com"
-      %p.fieldSet__text Enter the full email address that should be mapped to a specific IP address
+      = f.text_field :email_address, :class => "input input--text", :autofocus => true, :placeholder => "e.g. user@example.com or *@domain.com"
+      %p.fieldSet__text Enter a full email address or use wildcards like *@domain.com to route all emails for a domain through a specific IP
 
   .fieldSet__field
     = f.label :ip_address_id, "IP Address", :class => "fieldSet__label"

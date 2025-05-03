@@ -27,6 +27,26 @@ class EmailIPMapping < ApplicationRecord
   validates :email_address, uniqueness: { scope: :server_id }
   validate :ip_address_belongs_to_server_organization
   
+  # Match email against a mapping, supporting wildcards
+  # @param [String] email The email address to match
+  # @return [EmailIPMapping, nil] The matching mapping or nil
+  def self.match_for_email(server, email)
+    return nil if email.blank? || server.nil?
+    
+    # First try exact match
+    exact_match = server.email_ip_mappings.find_by(email_address: email)
+    return exact_match if exact_match
+    
+    # Try wildcard match for domain
+    if email.include?('@')
+      domain = email.split('@').last
+      wildcard = "*@#{domain}"
+      server.email_ip_mappings.find_by(email_address: wildcard)
+    else
+      nil
+    end
+  end
+  
   private
   
   def ip_address_belongs_to_server_organization
