@@ -53,10 +53,11 @@ module HasDNSChecks
       expected_record = spf_record
 
       # If we're using IP addresses, check if any of them are in the SPF record
-      if Postal::Config.dns.spf_ips.present?
+      spf_ips = Postal::Config.dns.spf_ips
+      if spf_ips.is_a?(Array) && spf_ips.any?
         # Check if each required IP is in the record
         missing_ips = []
-        Postal::Config.dns.spf_ips.each do |ip|
+        spf_ips.each do |ip|
           mechanism = ip.include?(":") ? "ip6:#{ip}" : "ip4:#{ip}"
           unless spf_records.any? { |record| record.include?(mechanism) }
             missing_ips << mechanism
