@@ -42,7 +42,7 @@ module LegacyAPI
         type: "CNAME",
         name: domain.return_path_domain,
         short_name: Postal::Config.dns.custom_return_path_prefix,
-        value: Postal::Config.dns.return_path,
+        value: Postal::Config.dns.return_path_domain,
         purpose: "return_path"
       }
       
