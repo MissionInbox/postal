@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.32.0](https://github.com/MissionInbox/postal/compare/3.31.0...3.32.0) (2025-05-03)
+
+
+### Features
+
+* **email:** support wildcard email addresses for IP mapping ([4f48282](https://github.com/MissionInbox/postal/commit/4f48282cc9c46edbe3d84c0502f3ddaa24b96957))
+
 ## [3.31.0](https://github.com/MissionInbox/postal/compare/3.30.0...3.31.0) (2025-05-03)
 
 
