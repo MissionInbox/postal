@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.33.1](https://github.com/MissionInbox/postal/compare/3.33.0...3.33.1) (2025-05-03)
+
+
+### Bug Fixes
+
+* **api:** fix return path domain null error ([c389fd7](https://github.com/MissionInbox/postal/commit/c389fd75ded2ce10495003380771f1998d545c71))
+
 ## [3.33.0](https://github.com/MissionInbox/postal/compare/3.32.0...3.33.0) (2025-05-03)
 
 
