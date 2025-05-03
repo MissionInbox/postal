@@ -58,7 +58,7 @@ class QueuedMessage < ApplicationRecord
     
     # Check for email-to-IP mapping first
     if message.mail_from && server
-      mapping = server.email_ip_mappings.find_by(email_address: message.mail_from)
+      mapping = EmailIPMapping.match_for_email(server, message.mail_from)
       if mapping&.ip_address
         self.ip_address = mapping.ip_address
         return
