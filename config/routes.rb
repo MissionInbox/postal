@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   match "/api/v1/servers/delete" => "legacy_api/servers_public#delete", via: [:get, :post, :patch, :put]
   match "/api/v1/organizations/list" => "legacy_api/organizations#index", via: [:get, :post, :patch, :put]
   match "/api/v1/organizations/show" => "legacy_api/organizations#show", via: [:get, :post, :patch, :put]
+  match "/api/v1/servers/ip_addresses" => "legacy_api/ip_addresses#index", via: [:get, :post, :patch, :put]
 
   scope "org/:org_permalink", as: "organization" do
     resources :domains, only: [:index, :new, :create, :destroy] do
