@@ -5,22 +5,33 @@
 # Table name: ip_addresses
 #
 #  id         :integer          not null, primary key
-#  ip_pool_id :integer
+#  hostname   :string(255)
 #  ipv4       :string(255)
 #  ipv6       :string(255)
+#  priority   :integer
 #  created_at :datetime
 #  updated_at :datetime
-#  hostname   :string(255)
-#  priority   :integer
 #
 
 class IPAddress < ApplicationRecord
 
-  belongs_to :ip_pool
+  has_many :ip_address_ip_pools, dependent: :destroy
+  has_many :ip_pools, through: :ip_address_ip_pools
   has_many :email_ip_mappings, dependent: :destroy
-  
+
+  def ipv4_with_pool_names
+    pool_names = ip_pools.map(&:name).join(", ")
+    "#{ipv4} (#{pool_names})"
+  end
+
+  # For backward compatibility
   def ipv4_with_pool_name
-    "#{ipv4} (#{ip_pool.name})"
+    ipv4_with_pool_names
+  end
+
+  # For backward compatibility
+  def ip_pool
+    ip_pools.first
   end
 
   validates :ipv4, presence: true, uniqueness: true

@@ -101,6 +101,7 @@ Rails.application.routes.draw do
   resources :users
   resources :ip_pools do
     resources :ip_addresses
+    resources :ip_pool_ip_addresses, only: [:new, :create], path: 'add_ip'
   end
 
   get "settings" => "user#edit"

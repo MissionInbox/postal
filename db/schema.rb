@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_29_000001) do
+ActiveRecord::Schema[7.0].define(version: 2025_05_13_000001) do
   create_table "additional_route_endpoints", id: :integer, charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "route_id"
     t.string "endpoint_type"
@@ -130,8 +130,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_29_000001) do
     t.integer "timeout"
   end
 
+  create_table "ip_address_ip_pools", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "ip_address_id", null: false
+    t.integer "ip_pool_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ip_address_id", "ip_pool_id"], name: "index_ip_address_ip_pools_on_ip_address_id_and_ip_pool_id", unique: true
+    t.index ["ip_pool_id"], name: "fk_rails_248cc7b695"
+  end
+
   create_table "ip_addresses", id: :integer, charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.integer "ip_pool_id"
     t.string "ipv4"
     t.string "ipv6"
     t.datetime "created_at"
@@ -394,4 +402,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_29_000001) do
 
   add_foreign_key "email_ip_mappings", "ip_addresses"
   add_foreign_key "email_ip_mappings", "servers"
+  add_foreign_key "ip_address_ip_pools", "ip_addresses"
+  add_foreign_key "ip_address_ip_pools", "ip_pools"
 end

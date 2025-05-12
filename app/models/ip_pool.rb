@@ -22,7 +22,8 @@ class IPPool < ApplicationRecord
 
   validates :name, presence: true
 
-  has_many :ip_addresses, dependent: :restrict_with_exception
+  has_many :ip_address_ip_pools, dependent: :destroy
+  has_many :ip_addresses, through: :ip_address_ip_pools
   has_many :servers, dependent: :restrict_with_exception
   has_many :organization_ip_pools, dependent: :destroy
   has_many :organizations, through: :organization_ip_pools

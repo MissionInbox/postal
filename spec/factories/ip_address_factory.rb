@@ -11,7 +11,6 @@
 #  priority   :integer
 #  created_at :datetime
 #  updated_at :datetime
-#  ip_pool_id :integer
 #
 FactoryBot.define do
   factory :ip_address do
