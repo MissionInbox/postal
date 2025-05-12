@@ -1,0 +1,36 @@
+- @page_title = "Add Existing IP Address to #{@ip_pool.name}"
+= content_for :page_header do
+  .pageHeader__backButton
+    = link_to "Back to pool", [:edit, @ip_pool], :class => 'button button--small button--neutral'
+  %h1.pageHeader__title= @page_title
+  
+- if @ip_addresses.empty?
+  .noData.noData--large.u-margin
+    %h2.noData__title There are no IP addresses available
+    %p.noData__text 
+      There are no unused IP addresses that can be added to this pool.
+      You can create a new IP address or all existing addresses are already in this pool.
+    
+- else
+  .u-margin
+    %table.dataTable
+      %thead
+        %tr
+          %td IPv4
+          %td IPv6
+          %td Hostname
+          %td Priority
+          %td Current Pools
+          %td
+      %tbody
+        - for ip in @ip_addresses
+          %tr
+            %td= ip.ipv4
+            %td= ip.ipv6
+            %td= ip.hostname
+            %td= ip.priority
+            %td= ip.ip_pools.map(&:name).join(", ")
+            %td.u-align-right
+              = form_tag ip_pool_ip_pool_ip_addresses_path(@ip_pool), method: :post, remote: true do
+                = hidden_field_tag :ip_address_id, ip.id
+                = submit_tag "Add to Pool", class: 'button button--small button--positive'

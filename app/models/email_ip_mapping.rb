@@ -50,7 +50,7 @@ class EmailIPMapping < ApplicationRecord
   private
   
   def ip_address_belongs_to_server_organization
-    return if ip_address.ip_pool.organizations.include?(server.organization)
-    errors.add(:ip_address, "must belong to the server's organization")
+    return if ip_address.ip_pools.any? { |pool| pool.organizations.include?(server.organization) }
+    errors.add(:ip_address, "must belong to at least one IP pool in the server's organization")
   end
 end

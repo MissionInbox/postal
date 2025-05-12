@@ -25,7 +25,10 @@
               %td{:width => "35%"}= ip.ipv6
               %td{:width => "35%"}= ip.hostname
               %td{:width => "10%"}= ip.priority
-    %p= link_to "Add an IP address to pool", [:new, @ip_pool, :ip_address], :class => "u-link"
+    %p
+      = link_to "Add new IP address to pool", [:new, @ip_pool, :ip_address], :class => "u-link"
+      |
+      = link_to "Add existing IP address to pool", [:new, @ip_pool, :ip_pool_ip_address], :class => "u-link"
 
 
   .fieldSetSubmit.buttonSet
