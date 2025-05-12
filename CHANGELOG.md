@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.34.0](https://github.com/MissionInbox/postal/compare/3.33.1...3.34.0) (2025-05-12)
+
+
+### Features
+
+* add ip pool add api ([bd3d7bf](https://github.com/MissionInbox/postal/commit/bd3d7bf9dd973e4dfc226309f9328a689b14c5ff))
+* make ip repetition enabled ([fddf2a1](https://github.com/MissionInbox/postal/commit/fddf2a1d65ec8ddd988f35a850e9a09dd3a4f62c))
+
 ## [3.33.1](https://github.com/MissionInbox/postal/compare/3.33.0...3.33.1) (2025-05-03)
 
 
