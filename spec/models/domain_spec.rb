@@ -216,7 +216,7 @@ describe Domain do
 
   describe "#spf_record" do
     it "returns the SPF record" do
-      expect(domain.spf_record).to eq "v=spf1 a mx include:#{Postal::Config.dns.spf_include} ~all"
+      expect(domain.spf_record).to eq "v=spf1 include:#{Postal::Config.dns.spf_include} ~all"
     end
   end
 

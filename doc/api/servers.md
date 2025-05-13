@@ -94,7 +94,6 @@ Returns detailed information about a specific server.
 | server_id | String | No | The UUID of the server to retrieve. If not provided, the server associated with the API key will be used. |
 | include_domains | Boolean | No | Set to `true` to include domains associated with the server |
 | include_stats | Boolean | No | Set to `false` to exclude basic stats from the response (defaults to `true` for backward compatibility) |
-| include_stags | Boolean | No | Set to `true` to include detailed statistics for the server (daily and hourly breakdowns) |
 
 #### Example Request
 
@@ -146,19 +145,21 @@ curl -X POST \
           "uuid": "domain-uuid-1",
           "name": "example.com",
           "verified": true,
-          "verification_method": "DNS",
-          "dns_checked_at": "2023-01-10T15:30:00.000Z",
-          "created_at": "2023-01-01T12:00:00.000Z",
-          "updated_at": "2023-01-10T15:30:00.000Z"
+          "spf_status": "OK",
+          "dkim_status": "OK",
+          "mx_status": "OK",
+          "return_path_status": "OK",
+          "outgoing": true,
+          "incoming": true,
+          "stats": {
+            "messages_sent_today": 523,
+            "messages_sent_this_month": 15834
+          }
         },
         {
           "uuid": "domain-uuid-2",
           "name": "mail.example.org",
-          "verified": true,
-          "verification_method": "DNS",
-          "dns_checked_at": "2023-01-10T15:30:00.000Z",
-          "created_at": "2023-01-05T09:15:00.000Z",
-          "updated_at": "2023-01-10T15:30:00.000Z"
+          "verified": true
         }
       ]
     }
@@ -168,9 +169,8 @@ curl -X POST \
 
 #### Optional Parameters
 
-- **include_domains**: If set to `true`, the response will include an array of domains associated with the server.
-- **include_stats**: Defaults to `true`. If set to `false`, the response will not include the basic stats section (messages sent today and this month).
-- **include_stags**: If set to `true`, the response will include detailed statistics in the `detailed_stats` field, providing daily and hourly message counts broken down by category (incoming, outgoing, bounces, spam, held).
+- **include_domains**: If set to `true`, the response will include an array of domains associated with the server. The `verified` flag in the domains indicates whether the domain's DNS records have been validated successfully - it will be `true` when the DNS record values match the expected values required for proper domain verification. Each domain will also include its DNS status fields (`spf_status`, `dkim_status`, `mx_status`, `return_path_status`) and usage flags (`outgoing`, `incoming`).
+- **include_stats**: Defaults to `true`. If set to `false`, the response will not include the basic stats section (messages sent today and this month). When domains are included with `include_domains: true`, each domain will also include its own stats with message counts specific to that domain.
 
 #### Example with Detailed Statistics
 
