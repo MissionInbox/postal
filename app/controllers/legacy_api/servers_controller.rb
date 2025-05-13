@@ -15,7 +15,6 @@ module LegacyAPI
           mode: server.mode,
           suspended: server.suspended?,
           privacy_mode: server.privacy_mode,
-          domain_identifier: server.domain_identifier,
           ip_pool_id: server.ip_pool_id,
           created_at: server.created_at,
           updated_at: server.updated_at,
@@ -30,28 +29,9 @@ module LegacyAPI
     end
     
     def show
-      # Get the server ID from the parameters
-      server_id = api_params["server_id"]
-      
-      # Validate parameters
-      if server_id.blank?
-        render_parameter_error("server_id is required")
-        return
-      end
-      
-      # Find the server
-      server = @current_credential.server.organization.servers.present.find_by_uuid(server_id)
-      if server.nil?
-        render_error "InvalidServer", message: "The server could not be found with the provided server_id"
-        return
-      end
-      
-      # Check access permissions
-      unless server.organization == @current_credential.server.organization
-        render_error "AccessDenied", message: "You don't have permission to view this server"
-        return
-      end
-      
+      # Use the server associated with the current credential
+      server = @current_credential.server
+
       # Format the response with more detailed information
       server_data = {
         uuid: server.uuid,
@@ -61,7 +41,6 @@ module LegacyAPI
         suspended: server.suspended?,
         suspension_reason: server.suspension_reason,
         privacy_mode: server.privacy_mode,
-        domain_identifier: server.domain_identifier,
         ip_pool_id: server.ip_pool_id,
         created_at: server.created_at,
         updated_at: server.updated_at,
@@ -73,12 +52,17 @@ module LegacyAPI
           uuid: server.organization.uuid,
           name: server.organization.name,
           permalink: server.organization.permalink
-        },
-        stats: {
-          messages_sent_today: server.message_db.total_messages(since: 1.day.ago),
-          messages_sent_this_month: server.message_db.total_messages(since: 1.month.ago)
         }
       }
+      
+      # Add stats if requested or if include_stats is not explicitly set to false
+      # (keeping backward compatibility by including stats by default)
+      if api_params["include_stats"] != false
+        server_data[:stats] = {
+          messages_sent_today: server.message_db.messages(where: { timestamp: { greater_than_or_equal_to: 1.day.ago.to_f } }, count: true),
+          messages_sent_this_month: server.message_db.messages(where: { timestamp: { greater_than_or_equal_to: 1.month.ago.to_f } }, count: true)
+        }
+      end
       
       # Add domains if requested
       if api_params["include_domains"]
