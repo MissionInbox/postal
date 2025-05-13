@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.36.0](https://github.com/MissionInbox/postal/compare/3.35.0...3.36.0) (2025-05-13)
+
+
+### Features
+
+* add endpoint to list domains with optional statistics ([9f0f74c](https://github.com/MissionInbox/postal/commit/9f0f74c673f8e677de3f3b1d491bfccf950e19d3))
+* enhance server data response with domain stats and update SPF record format ([29ff485](https://github.com/MissionInbox/postal/commit/29ff485a59b4965ab4699293b88839881590c93f))
+
 ## [3.35.0](https://github.com/MissionInbox/postal/compare/3.34.0...3.35.0) (2025-05-13)
 
 
