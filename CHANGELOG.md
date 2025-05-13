@@ -2,6 +2,18 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.35.0](https://github.com/MissionInbox/postal/compare/3.34.0...3.35.0) (2025-05-13)
+
+
+### Features
+
+* include stats in server data response by default ([ea101e2](https://github.com/MissionInbox/postal/commit/ea101e21a05a186f18501b4194f33c82515e3e8f))
+
+
+### Code Refactoring
+
+* remove domain_identifier from server data response ([46c5cdc](https://github.com/MissionInbox/postal/commit/46c5cdcda712f1dbf68e6d0210518287a7b2a409))
+
 ## [3.34.0](https://github.com/MissionInbox/postal/compare/3.33.1...3.34.0) (2025-05-12)
 
 
