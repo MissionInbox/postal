@@ -52,12 +52,17 @@ module LegacyAPI
           uuid: server.organization.uuid,
           name: server.organization.name,
           permalink: server.organization.permalink
-        },
-        stats: {
+        }
+      }
+      
+      # Add stats if requested or if include_stats is not explicitly set to false
+      # (keeping backward compatibility by including stats by default)
+      if api_params["include_stats"] != false
+        server_data[:stats] = {
           messages_sent_today: server.message_db.messages(where: { timestamp: { greater_than_or_equal_to: 1.day.ago.to_f } }, count: true),
           messages_sent_this_month: server.message_db.messages(where: { timestamp: { greater_than_or_equal_to: 1.month.ago.to_f } }, count: true)
         }
-      }
+      end
       
       # Add domains if requested
       if api_params["include_domains"]

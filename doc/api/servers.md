@@ -91,8 +91,10 @@ Returns detailed information about a specific server.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| server_id | String | Yes | The UUID of the server to retrieve |
+| server_id | String | No | The UUID of the server to retrieve. If not provided, the server associated with the API key will be used. |
 | include_domains | Boolean | No | Set to `true` to include domains associated with the server |
+| include_stats | Boolean | No | Set to `false` to exclude basic stats from the response (defaults to `true` for backward compatibility) |
+| include_stags | Boolean | No | Set to `true` to include detailed statistics for the server (daily and hourly breakdowns) |
 
 #### Example Request
 
@@ -102,8 +104,8 @@ curl -X POST \
   -H 'Content-Type: application/json' \
   -H 'X-Server-API-Key: YOUR_API_KEY' \
   -d '{
-    "server_id": "server-uuid",
-    "include_domains": true
+    "include_domains": true,
+    "include_stats": true
   }'
 ```
 
@@ -164,4 +166,73 @@ curl -X POST \
 }
 ```
 
-The `include_domains` parameter is optional. If set to `true`, the response will include an array of domains associated with the server.
+#### Optional Parameters
+
+- **include_domains**: If set to `true`, the response will include an array of domains associated with the server.
+- **include_stats**: Defaults to `true`. If set to `false`, the response will not include the basic stats section (messages sent today and this month).
+- **include_stags**: If set to `true`, the response will include detailed statistics in the `detailed_stats` field, providing daily and hourly message counts broken down by category (incoming, outgoing, bounces, spam, held).
+
+#### Example with Detailed Statistics
+
+```json
+{
+  "status": "success",
+  "time": 0.155,
+  "flags": {},
+  "data": {
+    "server": {
+      "uuid": "server-uuid",
+      "name": "Transactional Server",
+      "permalink": "transactional-server",
+      "mode": "Live",
+      "suspended": false,
+      "suspension_reason": null,
+      "privacy_mode": false,
+      "ip_pool_id": "ip-pool-id",
+      "created_at": "2023-01-01T12:00:00.000Z",
+      "updated_at": "2023-01-01T12:00:00.000Z",
+      "domains_count": 3,
+      "credentials_count": 2,
+      "webhooks_count": 1,
+      "routes_count": 5,
+      "organization": {
+        "uuid": "org-uuid",
+        "name": "ACME Inc",
+        "permalink": "acme"
+      },
+      "stats": {
+        "messages_sent_today": 1524,
+        "messages_sent_this_month": 45789
+      },
+      "detailed_stats": {
+        "daily": [
+          {
+            "date": "2023-04-14T00:00:00Z",
+            "stats": {
+              "incoming": 582,
+              "outgoing": 1467,
+              "bounces": 35,
+              "spam": 12,
+              "held": 5
+            }
+          },
+          // ... more daily entries
+        ],
+        "hourly": [
+          {
+            "date": "2023-04-14T15:00:00Z",
+            "stats": {
+              "incoming": 62,
+              "outgoing": 143,
+              "bounces": 3,
+              "spam": 1,
+              "held": 0
+            }
+          },
+          // ... more hourly entries
+        ]
+      }
+    }
+  }
+}
+```
