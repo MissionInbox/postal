@@ -116,18 +116,38 @@ module LegacyAPI
       
       # Format domain data
       domain_data = domains.map do |domain|
-        {
+        domain_data = {
           uuid: domain.uuid,
           name: domain.name,
           verified: domain.verified?,
-          verified_at: domain.verified_at,
-          verification_method: domain.verification_method,
-          dns_checked_at: domain.dns_checked_at,
-          created_at: domain.created_at,
-          updated_at: domain.updated_at,
-          outgoing: domain.outgoing,
-          incoming: domain.incoming
+          spf_status: domain.spf_status,
+          dkim_status: domain.dkim_status,
+          mx_status: domain.mx_status,
+          return_path_status: domain.return_path_status
         }
+        
+        # Add stats for each domain if requested (defaults to false)
+        if api_params["include_stats"] == true
+          # Get message counts for this specific domain
+          domain_data[:stats] = {
+            messages_sent_today: @current_credential.server.message_db.messages(
+              where: { 
+                timestamp: { greater_than_or_equal_to: 1.day.ago.to_f },
+                domain_id: domain.id
+              }, 
+              count: true
+            ),
+            messages_sent_this_month: @current_credential.server.message_db.messages(
+              where: { 
+                timestamp: { greater_than_or_equal_to: 1.month.ago.to_f },
+                domain_id: domain.id
+              }, 
+              count: true
+            )
+          }
+        end
+        
+        domain_data
       end
       
       # Render paginated response

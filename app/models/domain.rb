@@ -121,7 +121,7 @@ class Domain < ApplicationRecord
       "v=spf1 #{ip_mechanisms.join(' ')} ~all"
     else
       # Fall back to the default include mechanism
-      "v=spf1 a mx include:#{Postal::Config.dns.spf_include} ~all"
+      "v=spf1 include:#{Postal::Config.dns.spf_include} ~all"
     end
   end
 
