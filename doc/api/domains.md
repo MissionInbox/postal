@@ -15,6 +15,99 @@ The API supports two content types:
 
 ## Endpoints
 
+### List Domains
+
+**URL:** `/api/v1/domains/list`  
+**Method:** POST  
+
+Returns a paginated list of domains associated with the server.
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| page | Integer | No | The page number to retrieve (defaults to 1) |
+| per_page | Integer | No | The number of domains per page (defaults to 30, max 100) |
+| verified | Boolean | No | Filter domains by verification status |
+| search | String | No | Search for domains by name |
+| order_by | String | No | Field to order by (name, created_at, verified_at) |
+| order_direction | String | No | Direction to order (ASC or DESC) |
+| include_stats | Boolean | No | Whether to include message statistics for each domain (defaults to false) |
+
+#### Example Request
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/domains/list \
+  -H 'Content-Type: application/json' \
+  -H 'X-Server-API-Key: YOUR_API_KEY' \
+  -d '{
+    "page": 1,
+    "per_page": 10,
+    "include_stats": true
+  }'
+```
+
+#### Example Response
+
+```json
+{
+  "status": "success",
+  "time": 0.055,
+  "flags": {},
+  "data": {
+    "domains": [
+      {
+        "uuid": "domain-uuid-1",
+        "name": "example.com",
+        "verified": true,
+        "verified_at": "2023-01-01T12:00:00.000Z",
+        "verification_method": "DNS",
+        "dns_checked_at": "2023-01-10T15:30:00.000Z",
+        "spf_status": "OK",
+        "dkim_status": "OK",
+        "mx_status": "OK",
+        "return_path_status": "OK",
+        "outgoing": true,
+        "incoming": true,
+        "created_at": "2023-01-01T12:00:00.000Z",
+        "updated_at": "2023-01-10T15:30:00.000Z",
+        "stats": {
+          "messages_sent_today": 523,
+          "messages_sent_this_month": 15834
+        }
+      },
+      {
+        "uuid": "domain-uuid-2",
+        "name": "mail.example.org",
+        "verified": true,
+        "verified_at": "2023-01-05T09:15:00.000Z",
+        "verification_method": "DNS",
+        "dns_checked_at": "2023-01-10T15:30:00.000Z",
+        "spf_status": "OK",
+        "dkim_status": "OK",
+        "mx_status": "OK",
+        "return_path_status": "OK",
+        "outgoing": true,
+        "incoming": true,
+        "created_at": "2023-01-05T09:15:00.000Z",
+        "updated_at": "2023-01-10T15:30:00.000Z",
+        "stats": {
+          "messages_sent_today": 312,
+          "messages_sent_this_month": 8721
+        }
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "per_page": 10,
+      "total_pages": 1,
+      "total_count": 2
+    }
+  }
+}
+```
+
 ### Create Domain
 
 **URL:** `/api/v1/domains/create`  
