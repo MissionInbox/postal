@@ -19,7 +19,7 @@ class ReceivedHeader
 
       if server.nil? || server.privacy_mode == false
         hostname = DNSResolver.local.ip_to_hostname(ip_address)
-        header = "from #{helo} (#{hostname} [#{ip_address}]) #{header}"
+        header = "from #{helo} #{header}"
       end
 
       header
