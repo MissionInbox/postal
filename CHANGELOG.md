@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.36.1](https://github.com/MissionInbox/postal/compare/3.36.0...3.36.1) (2025-05-16)
+
+
+### Bug Fixes
+
+* simplify received header format by removing hostname ([ab7a42d](https://github.com/MissionInbox/postal/commit/ab7a42de41491097840fb7a4bb78a5a6b8dba532))
+
 ## [3.36.0](https://github.com/MissionInbox/postal/compare/3.35.0...3.36.0) (2025-05-13)
 
 
