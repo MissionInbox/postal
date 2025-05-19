@@ -153,6 +153,74 @@ curl -X POST \
 }
 ```
 
+### Delete Domain
+
+**URL:** `/api/v1/domains/delete/{name}`  
+**Method:** DELETE  
+
+Alternatively, you can provide the domain name in the request body:
+
+**URL:** `/api/v1/domains/delete`  
+**Method:** POST  
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| name | String | Yes | The name of the domain to delete |
+
+#### Example Request (URL parameter)
+
+```bash
+curl -X DELETE \
+  https://postal.example.com/api/v1/domains/delete/example.com \
+  -H 'X-Server-API-Key: YOUR_API_KEY'
+```
+
+#### Example Request (Request body)
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/domains/delete \
+  -H 'Content-Type: application/json' \
+  -H 'X-Server-API-Key: YOUR_API_KEY' \
+  -d '{
+    "name": "example.com"
+  }'
+```
+
+#### Example Success Response
+
+```json
+{
+  "status": "success",
+  "time": 0.055,
+  "flags": {},
+  "data": {
+    "deleted": true,
+    "domain": {
+      "uuid": "domain-uuid",
+      "name": "example.com"
+    }
+  }
+}
+```
+
+#### Example Error Response
+
+```json
+{
+  "status": "error",
+  "time": 0.055,
+  "flags": {},
+  "data": {
+    "code": "InvalidDomain",
+    "message": "The domain could not be found with the provided name",
+    "name": "nonexistent-domain.com"
+  }
+}
+```
+
 ### Verify Domain
 
 **URL:** `/api/v1/domains/verify`  
