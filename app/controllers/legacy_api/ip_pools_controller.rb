@@ -13,12 +13,21 @@ module LegacyAPI
         return render_error("NoValidIPPools", "No valid IP pools with IP addresses found")
       end
       
-      # Find the pool with the least messages per IP address
-      least_used_pool = valid_pools.min_by do |pool|
+      # Sort pools by usage (least to most)
+      sorted_pools = valid_pools.sort_by do |pool|
         count = count_messages_for_ip_pool(pool)
         ip_count = pool.ip_addresses.count
         ip_count > 0 ? count.to_f / ip_count : Float::INFINITY
       end
+      
+      # Get top N least used pools (default to top 3)
+      top_n_limit = params[:top_pools_limit].to_i
+      top_n_limit = 5 if top_n_limit <= 0  # Default to 3 if not specified or invalid
+      top_n = [sorted_pools.size, top_n_limit].min
+      
+      # Use a timestamp-based index to rotate through the top pools
+      pool_index = (Time.now.to_i / 60) % top_n
+      least_used_pool = sorted_pools[pool_index]
       
       # Get stats for the pool
       total_sent = count_messages_for_ip_pool(least_used_pool)

@@ -78,8 +78,8 @@ module LegacyAPI
         valid_pools = organization.ip_pools.select { |pool| pool.ip_addresses.any? }
         
         if valid_pools.any?
-          # Find the pool with the least messages per IP address
-          least_used_pool = valid_pools.min_by do |pool|
+          # Sort pools by usage (least to most)
+          sorted_pools = valid_pools.sort_by do |pool|
             ip_address_ids = pool.ip_addresses.pluck(:id)
             if ip_address_ids.empty?
               Float::INFINITY
@@ -91,7 +91,18 @@ module LegacyAPI
             end
           end
           
-          ip_pool_id = least_used_pool&.id
+          # Get top N least used pools (default to top 3)
+          top_n_limit = api_params["top_pools_limit"].to_i
+          top_n_limit = 5 if top_n_limit <= 0  # Default to 3 if not specified or invalid
+          top_n = [sorted_pools.size, top_n_limit].min
+          
+          # Use a timestamp-based index to rotate through the top pools
+          # Changes approximately every minute, ensuring different servers created 
+          # within the same minute get different pools
+          pool_index = (Time.now.to_i / 60) % top_n
+          selected_pool = sorted_pools[pool_index]
+          
+          ip_pool_id = selected_pool&.id
         end
       end
       

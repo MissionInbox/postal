@@ -265,7 +265,7 @@ For permission issues:
 
 ## Finding the Least Used IP Pool
 
-This endpoint allows you to find the IP pool with the lowest average message count per IP address in your organization. This is useful when you want to assign an IP pool to a new server to balance email sending load.
+This endpoint allows you to find one of the least used IP pools in your organization using a round-robin approach among the top least used pools. This helps balance email sending load across multiple IP pools when creating multiple servers in succession.
 
 ```
 GET /api/v1/servers/ip_pools/least_used
@@ -276,6 +276,7 @@ GET /api/v1/servers/ip_pools/least_used
 | Name | Type | Description |
 |------|------|-------------|
 | stats_period | string | Specifies the time period to include in statistics calculation. Options: `today`, `yesterday`, `week`, `month`, `year`. If not specified, uses all-time statistics. |
+| top_pools_limit | integer | Specifies how many of the least used pools to consider for round-robin selection (defaults to 3) |
 
 ### Example
 
