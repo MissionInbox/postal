@@ -35,31 +35,71 @@ module LegacyAPI
           )
         end
         
-        # Return the existing server details with API key
-        render_success(
-          server: {
-            uuid: existing_server.uuid,
-            name: existing_server.name,
-            permalink: existing_server.permalink,
-            mode: existing_server.mode,
-            created_at: existing_server.created_at,
-            organization: {
-              uuid: organization.uuid,
-              name: organization.name,
-              permalink: organization.permalink
-            },
-            api_key: api_credential.key,
-            already_exists: true
+        # Build response data for existing server
+        response_data = {
+          uuid: existing_server.uuid,
+          name: existing_server.name,
+          permalink: existing_server.permalink,
+          mode: existing_server.mode,
+          created_at: existing_server.created_at,
+          organization: {
+            uuid: organization.uuid,
+            name: organization.name,
+            permalink: organization.permalink
+          },
+          api_key: api_credential.key,
+          already_exists: true
+        }
+        
+        # Add IP pool information if one is assigned
+        if existing_server.ip_pool
+          response_data[:ip_pool] = {
+            id: existing_server.ip_pool.id,
+            uuid: existing_server.ip_pool.uuid,
+            name: existing_server.ip_pool.name,
+            auto_assigned: false
           }
-        )
+        end
+        
+        # Return the existing server details with API key
+        render_success(server: response_data)
         return
+      end
+      
+      # Determine IP pool to use
+      ip_pool_id = nil
+      
+      # Use the provided IP pool ID if specified
+      if api_params["ip_pool_id"].present?
+        ip_pool_id = api_params["ip_pool_id"]
+      # Otherwise, try to find the least used IP pool if auto_assign_ip_pool is enabled
+      elsif api_params["auto_assign_ip_pool"].to_s.downcase == 'true'
+        # Only consider pools with at least one IP address
+        valid_pools = organization.ip_pools.select { |pool| pool.ip_addresses.any? }
+        
+        if valid_pools.any?
+          # Find the pool with the least messages per IP address
+          least_used_pool = valid_pools.min_by do |pool|
+            ip_address_ids = pool.ip_addresses.pluck(:id)
+            if ip_address_ids.empty?
+              Float::INFINITY
+            else
+              # Count messages for this pool
+              count = QueuedMessage.where(ip_address_id: ip_address_ids).count
+              ip_count = pool.ip_addresses.count
+              ip_count > 0 ? count.to_f / ip_count : Float::INFINITY
+            end
+          end
+          
+          ip_pool_id = least_used_pool&.id
+        end
       end
       
       # Create the server
       server = organization.servers.build(
         name: name,
         mode: api_params["mode"] || "Live",
-        ip_pool_id: api_params["ip_pool_id"],
+        ip_pool_id: ip_pool_id,
         # Add optional parameters as needed
         privacy_mode: api_params["privacy_mode"] || false
       )
@@ -77,23 +117,34 @@ module LegacyAPI
           key: SecureRandom.alphanumeric(24).downcase
         )
         
-        # Return the new server details along with the API key
-        render_success(
-          server: {
-            uuid: server.uuid,
-            name: server.name,
-            permalink: server.permalink,
-            mode: server.mode,
-            created_at: server.created_at,
-            organization: {
-              uuid: organization.uuid,
-              name: organization.name,
-              permalink: organization.permalink
-            },
-            api_key: api_credential.key,
-            already_exists: false
+        # Build response with IP pool info if applicable
+        response_data = {
+          uuid: server.uuid,
+          name: server.name,
+          permalink: server.permalink,
+          mode: server.mode,
+          created_at: server.created_at,
+          organization: {
+            uuid: organization.uuid,
+            name: organization.name,
+            permalink: organization.permalink
+          },
+          api_key: api_credential.key,
+          already_exists: false
+        }
+        
+        # Add IP pool information if one was assigned
+        if server.ip_pool
+          response_data[:ip_pool] = {
+            id: server.ip_pool.id,
+            uuid: server.ip_pool.uuid,
+            name: server.ip_pool.name,
+            auto_assigned: api_params["auto_assign_ip_pool"].to_s.downcase == 'true' && api_params["ip_pool_id"].blank?
           }
-        )
+        end
+        
+        # Return the new server details along with the API key
+        render_success(server: response_data)
       else
         render_error "ValidationError", message: "The server could not be created", errors: server.errors.full_messages
       end
