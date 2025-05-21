@@ -72,8 +72,8 @@ module LegacyAPI
       # Use the provided IP pool ID if specified
       if api_params["ip_pool_id"].present?
         ip_pool_id = api_params["ip_pool_id"]
-      # Otherwise, try to find the least used IP pool if auto_assign_ip_pool is enabled
-      elsif api_params["auto_assign_ip_pool"].to_s.downcase == 'true'
+      # Otherwise, try to find the least used IP pool (auto_assign_ip_pool defaults to true)
+      elsif api_params["auto_assign_ip_pool"] != false && api_params["auto_assign_ip_pool"].to_s.downcase != 'false'
         # Only consider pools with at least one IP address
         valid_pools = organization.ip_pools.select { |pool| pool.ip_addresses.any? }
         
@@ -139,7 +139,7 @@ module LegacyAPI
             id: server.ip_pool.id,
             uuid: server.ip_pool.uuid,
             name: server.ip_pool.name,
-            auto_assigned: api_params["auto_assign_ip_pool"].to_s.downcase == 'true' && api_params["ip_pool_id"].blank?
+            auto_assigned: api_params["ip_pool_id"].blank? && api_params["auto_assign_ip_pool"] != false && api_params["auto_assign_ip_pool"].to_s.downcase != 'false'
           }
         end
         
