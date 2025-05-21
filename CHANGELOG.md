@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.38.0](https://github.com/MissionInbox/postal/compare/3.37.0...3.38.0) (2025-05-21)
+
+
+### Features
+
+* clarify auto-assign IP pool behavior in API documentation and implementation ([d611682](https://github.com/MissionInbox/postal/commit/d61168274f41a418f4b211814a90149351eae41a))
+* update API documentation for IP pools and servers with new parameters and examples ([8126be5](https://github.com/MissionInbox/postal/commit/8126be56ca8f18afc21ee8596a249cfc49cbc97e))
+
 ## [3.37.0](https://github.com/MissionInbox/postal/compare/3.36.1...3.37.0) (2025-05-21)
 
 
