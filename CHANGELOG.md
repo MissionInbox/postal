@@ -2,6 +2,15 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.37.0](https://github.com/MissionInbox/postal/compare/3.36.1...3.37.0) (2025-05-21)
+
+
+### Features
+
+* add delete domain API endpoint with request body support ([f738988](https://github.com/MissionInbox/postal/commit/f738988a271bfd57f8f35d761dbcac7d588b9b47))
+* add least used IP pool endpoint with statistics support ([60ba041](https://github.com/MissionInbox/postal/commit/60ba04174cf57f08e29a9774c94c2bdf76662d27))
+* enhance server creation response with IP pool details and auto-assignment logic ([081aef8](https://github.com/MissionInbox/postal/commit/081aef8961d5ad58fa9ed4b6b5db7b961f50fff7))
+
 ## [3.36.1](https://github.com/MissionInbox/postal/compare/3.36.0...3.36.1) (2025-05-16)
 
 
