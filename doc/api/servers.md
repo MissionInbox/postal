@@ -30,7 +30,7 @@ Creates a new server in the specified organization.
 | name | String | Yes | The name of the new server |
 | mode | String | No | Server mode, either "Live" or "Development" (defaults to "Live") |
 | ip_pool_id | Integer | No | The ID of the IP pool to assign to this server |
-| auto_assign_ip_pool | Boolean | No | If set to `true` and no `ip_pool_id` is provided, automatically assigns the least used IP pool to the server |
+| auto_assign_ip_pool | Boolean | No | Automatically assigns the least used IP pool to the server when no `ip_pool_id` is provided (defaults to `true`, set to `false` to disable) |
 | privacy_mode | Boolean | No | Whether to enable privacy mode for this server (defaults to `false`) |
 | skip_provision_database | Boolean | No | If set to `true`, skips provisioning a message database (advanced usage only) |
 
@@ -43,8 +43,7 @@ curl -X POST \
   -d '{
     "organization_uuid": "org-uuid-123",
     "name": "New Transactional Server",
-    "mode": "Live",
-    "auto_assign_ip_pool": true
+    "mode": "Live"
   }'
 ```
 
