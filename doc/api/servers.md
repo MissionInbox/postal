@@ -30,7 +30,8 @@ Creates a new server in the specified organization.
 | name | String | Yes | The name of the new server |
 | mode | String | No | Server mode, either "Live" or "Development" (defaults to "Live") |
 | ip_pool_id | Integer | No | The ID of the IP pool to assign to this server |
-| auto_assign_ip_pool | Boolean | No | Automatically assigns the least used IP pool to the server when no `ip_pool_id` is provided (defaults to `true`, set to `false` to disable) |
+| auto_assign_ip_pool | Boolean | No | Automatically assigns an IP pool to the server when no `ip_pool_id` is provided using a round-robin approach among the least used pools (defaults to `true`, set to `false` to disable) |
+| top_pools_limit | Integer | No | When auto-assigning, specifies how many of the least used pools to consider for round-robin selection (defaults to 5) |
 | privacy_mode | Boolean | No | Whether to enable privacy mode for this server (defaults to `false`) |
 | skip_provision_database | Boolean | No | If set to `true`, skips provisioning a message database (advanced usage only) |
 
