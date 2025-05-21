@@ -1,6 +1,6 @@
 # Servers API
 
-The Servers API allows you to programmatically retrieve information about your Postal servers.
+The Servers API allows you to programmatically retrieve information about and manage your Postal servers.
 
 ## Authentication
 
@@ -14,6 +14,73 @@ The API supports two content types:
 2. `application/x-www-form-urlencoded` - Parameters should be provided as URL-encoded form data with a `params` parameter containing a JSON string.
 
 ## Endpoints
+
+### Create Server
+
+**URL:** `/api/v1/servers/create`  
+**Method:** POST  
+
+Creates a new server in the specified organization.
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| organization_uuid | String | Yes | The UUID of the organization to create the server in |
+| name | String | Yes | The name of the new server |
+| mode | String | No | Server mode, either "Live" or "Development" (defaults to "Live") |
+| ip_pool_id | Integer | No | The ID of the IP pool to assign to this server |
+| auto_assign_ip_pool | Boolean | No | If set to `true` and no `ip_pool_id` is provided, automatically assigns the least used IP pool to the server |
+| privacy_mode | Boolean | No | Whether to enable privacy mode for this server (defaults to `false`) |
+| skip_provision_database | Boolean | No | If set to `true`, skips provisioning a message database (advanced usage only) |
+
+#### Example Request
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/servers/create \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "organization_uuid": "org-uuid-123",
+    "name": "New Transactional Server",
+    "mode": "Live",
+    "auto_assign_ip_pool": true
+  }'
+```
+
+#### Example Response
+
+```json
+{
+  "status": "success",
+  "time": 1.255,
+  "flags": {},
+  "data": {
+    "server": {
+      "uuid": "server-uuid-123",
+      "name": "New Transactional Server",
+      "permalink": "new-transactional-server",
+      "mode": "Live",
+      "created_at": "2025-05-13T14:30:00.000Z",
+      "organization": {
+        "uuid": "org-uuid-123",
+        "name": "ACME Inc",
+        "permalink": "acme"
+      },
+      "api_key": "abcdef123456789",
+      "already_exists": false,
+      "ip_pool": {
+        "id": 1,
+        "uuid": "ip-pool-uuid-123",
+        "name": "Main Pool",
+        "auto_assigned": true
+      }
+    }
+  }
+}
+```
+
+If a server with the same name already exists in the organization, the API will return the existing server's details with a flag indicating `"already_exists": true`.
 
 ### List Servers
 
