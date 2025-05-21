@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.39.0](https://github.com/MissionInbox/postal/compare/3.38.0...3.39.0) (2025-05-21)
+
+
+### Features
+
+* implement round-robin selection for least used IP pools in server creation ([aafd67a](https://github.com/MissionInbox/postal/commit/aafd67aee7fb2bb121cb5d4fc0cae400f74399f1))
+
 ## [3.38.0](https://github.com/MissionInbox/postal/compare/3.37.0...3.38.0) (2025-05-21)
 
 
