@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.40.0](https://github.com/MissionInbox/postal/compare/3.39.0...3.40.0) (2025-06-02)
+
+
+### Features
+
+* update held messages action wording for clarity ([eb27aab](https://github.com/MissionInbox/postal/commit/eb27aab9c015bd229049a174996b0a4a5f13e70d))
+
 ## [3.39.0](https://github.com/MissionInbox/postal/compare/3.38.0...3.39.0) (2025-05-21)
 
 
