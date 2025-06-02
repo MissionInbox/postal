@@ -188,7 +188,7 @@ class MessagesController < ApplicationController
     if count > 0
       flash[:notice] = "#{count} held messages have been canceled and released for delivery."
     else
-      flash[:notice] = "No held messages to cancel and release."
+      flash[:notice] = "No held messages to release and send."
     end
     redirect_to held_organization_server_messages_path(organization, @server)
   end
