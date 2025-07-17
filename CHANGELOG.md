@@ -2,6 +2,19 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.41.0](https://github.com/MissionInbox/postal/compare/3.40.0...3.41.0) (2025-07-17)
+
+
+### Features
+
+* add bulk messages status api ([d4b30a1](https://github.com/MissionInbox/postal/commit/d4b30a149b752a640ed68ca79163c2554db07219))
+* add message status api ([3c7c65a](https://github.com/MissionInbox/postal/commit/3c7c65a15c02e3fca2bc3486bf90770d11425b64))
+
+
+### Documentation
+
+* add message related api documentation ([dad9662](https://github.com/MissionInbox/postal/commit/dad9662550c22a13a804447fd513eb4b62b6a97a))
+
 ## [3.40.0](https://github.com/MissionInbox/postal/compare/3.39.0...3.40.0) (2025-06-02)
 
 
