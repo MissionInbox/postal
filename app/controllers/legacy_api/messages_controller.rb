@@ -136,5 +136,43 @@ module LegacyAPI
                    id: api_params["id"]
     end
 
+  # Returns the status of a message by its message ID
+  #
+  #   URL:            /api/v1/messages/status
+  #
+  #   Parameters:     messageId       => REQ: The message ID to look up
+  #
+  #   Response:       A hash containing status information
+  #                   OR an error if the message does not exist.
+  #
+  def status
+    if api_params["messageId"].blank?
+      render_parameter_error "`messageId` parameter is required but is missing"
+      return
+    end
+
+    message = @current_credential.server.message_by_message_id(api_params["messageId"])
+    
+    status_hash = {
+      id: message.id,
+      token: message.token,
+      message_id: message.message_id,
+      status: message.status,
+      last_delivery_attempt: message.last_delivery_attempt&.to_f,
+      held: message.held,
+      hold_expiry: message.hold_expiry&.to_f,
+      timestamp: message.timestamp.to_f,
+      rcpt_to: message.rcpt_to,
+      mail_from: message.mail_from,
+      subject: message.subject
+    }
+
+    render_success status_hash
+  rescue Postal::MessageDB::Message::NotFound
+    render_error "MessageNotFound",
+                 message: "No message found matching provided message ID",
+                 message_id: api_params["messageId"]
+  end
+
   end
 end
