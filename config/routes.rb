@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   match "/api/v1/messages/message" => "legacy_api/messages#message", via: [:get, :post, :patch, :put]
   match "/api/v1/messages/deliveries" => "legacy_api/messages#deliveries", via: [:get, :post, :patch, :put]
   match "/api/v1/messages/status" => "legacy_api/messages#status", via: [:get, :post, :patch, :put]
+  match "/api/v1/messages/bulk_status" => "legacy_api/messages#bulk_status", via: [:get, :post, :patch, :put]
   match "/api/v1/domains/create" => "legacy_api/domains#create", via: [:get, :post, :patch, :put]
   match "/api/v1/domains/verify" => "legacy_api/domains#verify", via: [:get, :post, :patch, :put]
   match "/api/v1/domains/dns_records" => "legacy_api/domains#dns_records", via: [:get, :post, :patch, :put]
