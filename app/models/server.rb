@@ -132,6 +132,12 @@ class Server < ApplicationRecord
 
   delegate :message, to: :message_db
 
+  def message_by_message_id(message_id)
+    messages = message_db.messages(where: { message_id: message_id }, limit: 1)
+    raise Postal::MessageDB::Message::NotFound if messages.empty?
+    messages.first
+  end
+
   def message_rate
     @message_rate ||= message_db.live_stats.total(60, types: [:incoming, :outgoing]) / 60.0
   end

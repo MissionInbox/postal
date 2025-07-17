@@ -136,5 +136,88 @@ module LegacyAPI
                    id: api_params["id"]
     end
 
+  # Returns the status of a message by its message ID
+  #
+  #   URL:            /api/v1/messages/status
+  #
+  #   Parameters:     messageId       => REQ: The message ID to look up
+  #
+  #   Response:       A hash containing status information
+  #                   OR an error if the message does not exist.
+  #
+  def status
+    if api_params["messageId"].blank?
+      render_parameter_error "`messageId` parameter is required but is missing"
+      return
+    end
+
+    message = @current_credential.server.message_by_message_id(api_params["messageId"])
+    
+    status_hash = {
+      id: message.id,
+      token: message.token,
+      message_id: message.message_id,
+      status: message.status,
+      last_delivery_attempt: message.last_delivery_attempt&.to_f,
+      held: message.held,
+      hold_expiry: message.hold_expiry&.to_f,
+      timestamp: message.timestamp.to_f,
+      rcpt_to: message.rcpt_to,
+      mail_from: message.mail_from,
+      subject: message.subject
+    }
+
+    render_success status_hash
+  rescue Postal::MessageDB::Message::NotFound
+    render_error "MessageNotFound",
+                 message: "No message found matching provided message ID",
+                 message_id: api_params["messageId"]
+  end
+
+  # Returns the status of multiple messages by their message IDs
+  #
+  #   URL:            /api/v1/messages/bulk_status
+  #
+  #   Parameters:     messageIds      => REQ: Array of message IDs to look up
+  #
+  #   Response:       An array with the same length as messageIds containing
+  #                   status information or null for messages not found
+  #
+  def bulk_status
+    if api_params["messageIds"].blank? || !api_params["messageIds"].is_a?(Array)
+      render_parameter_error "`messageIds` parameter is required and must be an array"
+      return
+    end
+
+    message_ids = api_params["messageIds"]
+    results = []
+
+    message_ids.each do |message_id|
+      begin
+        message = @current_credential.server.message_by_message_id(message_id)
+        
+        status_hash = {
+          id: message.id,
+          token: message.token,
+          message_id: message.message_id,
+          status: message.status,
+          last_delivery_attempt: message.last_delivery_attempt&.to_f,
+          held: message.held,
+          hold_expiry: message.hold_expiry&.to_f,
+          timestamp: message.timestamp.to_f,
+          rcpt_to: message.rcpt_to,
+          mail_from: message.mail_from,
+          subject: message.subject
+        }
+        
+        results << status_hash
+      rescue Postal::MessageDB::Message::NotFound
+        results << nil
+      end
+    end
+
+    render_success results
+  end
+
   end
 end
