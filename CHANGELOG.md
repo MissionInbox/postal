@@ -2,6 +2,19 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.42.0](https://github.com/MissionInbox/postal/compare/3.41.0...3.42.0) (2025-08-25)
+
+
+### Features
+
+* add organization statistics api ([42a8e58](https://github.com/MissionInbox/postal/commit/42a8e585dbb2746acf493ad6e22969481ad1201a))
+* add read me for getting started with the development ([b955967](https://github.com/MissionInbox/postal/commit/b9559671eecc2e058084086f466de2c6d530f2fd))
+
+
+### Documentation
+
+* add api doc for organization stats ([a9c217b](https://github.com/MissionInbox/postal/commit/a9c217b0fec0d1d6c83a89000fd4538c843f5eef))
+
 ## [3.41.0](https://github.com/MissionInbox/postal/compare/3.40.0...3.41.0) (2025-07-17)
 
 
