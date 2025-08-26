@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.44.0](https://github.com/MissionInbox/postal/compare/3.43.0...3.44.0) (2025-08-26)
+
+
+### Features
+
+* add smtp_user to the server creation response ([20ed06d](https://github.com/MissionInbox/postal/commit/20ed06d92266d309d832a16c2c7fa2a199edda90))
+
 ## [3.43.0](https://github.com/MissionInbox/postal/compare/3.42.0...3.43.0) (2025-08-26)
 
 
