@@ -20,7 +20,7 @@ The API supports two content types:
 **URL:** `/api/v1/servers/create`  
 **Method:** POST  
 
-Creates a new server in the specified organization.
+Creates a new server in the specified organization. The server will be created with default API and SMTP credentials.
 
 #### Parameters
 
@@ -68,6 +68,7 @@ curl -X POST \
         "permalink": "acme"
       },
       "api_key": "abcdef123456789",
+      "smtp_key": "zyxwvutsrq987654321",
       "already_exists": false,
       "ip_pool": {
         "id": 1,
@@ -80,7 +81,22 @@ curl -X POST \
 }
 ```
 
-If a server with the same name already exists in the organization, the API will return the existing server's details with a flag indicating `"already_exists": true`.
+If a server with the same name already exists in the organization, the API will return the existing server's details with a flag indicating `"already_exists": true`. If the existing server lacks default API or SMTP credentials, they will be automatically created.
+
+#### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| uuid | String | The server's unique identifier |
+| name | String | The server's name |
+| permalink | String | The server's URL-friendly permalink |
+| mode | String | Server mode ("Live" or "Development") |
+| created_at | String | Server creation timestamp |
+| organization | Object | Organization details (uuid, name, permalink) |
+| api_key | String | The default API credential key for this server |
+| smtp_key | String | The default SMTP credential key for this server |
+| already_exists | Boolean | Whether the server already existed |
+| ip_pool | Object | IP pool information (if assigned) |
 
 ### List Servers
 
