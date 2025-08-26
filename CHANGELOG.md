@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.43.0](https://github.com/MissionInbox/postal/compare/3.42.0...3.43.0) (2025-08-26)
+
+
+### Features
+
+* add default smtp credential ([4db1983](https://github.com/MissionInbox/postal/commit/4db1983d584a4ba6f745ca016f40b18e40478661))
+
 ## [3.42.0](https://github.com/MissionInbox/postal/compare/3.41.0...3.42.0) (2025-08-25)
 
 
