@@ -60,6 +60,7 @@ module LegacyAPI
           },
           api_key: api_credential.key,
           smtp_key: smtp_credential.key,
+          smtp_user: "#{organization.permalink}/#{existing_server.permalink}",
           already_exists: true
         }
         
@@ -160,6 +161,7 @@ module LegacyAPI
           },
           api_key: api_credential.key,
           smtp_key: smtp_credential.key,
+          smtp_user: "#{organization.permalink}/#{server.permalink}",
           already_exists: false
         }
         

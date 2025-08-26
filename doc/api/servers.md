@@ -69,6 +69,7 @@ curl -X POST \
       },
       "api_key": "abcdef123456789",
       "smtp_key": "zyxwvutsrq987654321",
+      "smtp_user": "acme/new-transactional-server",
       "already_exists": false,
       "ip_pool": {
         "id": 1,
@@ -95,6 +96,7 @@ If a server with the same name already exists in the organization, the API will 
 | organization | Object | Organization details (uuid, name, permalink) |
 | api_key | String | The default API credential key for this server |
 | smtp_key | String | The default SMTP credential key for this server |
+| smtp_user | String | The SMTP username in format `organization_permalink/server_permalink` |
 | already_exists | Boolean | Whether the server already existed |
 | ip_pool | Object | IP pool information (if assigned) |
 
