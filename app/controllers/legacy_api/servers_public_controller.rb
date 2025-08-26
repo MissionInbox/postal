@@ -35,6 +35,17 @@ module LegacyAPI
           )
         end
         
+        # Check if server already has an SMTP credential
+        smtp_credential = existing_server.credentials.where(type: "SMTP").first
+        
+        # If no SMTP credential exists, create one
+        if smtp_credential.nil?
+          smtp_credential = existing_server.credentials.create(
+            type: "SMTP",
+            name: "Default SMTP Credential"
+          )
+        end
+        
         # Build response data for existing server
         response_data = {
           uuid: existing_server.uuid,
@@ -48,6 +59,7 @@ module LegacyAPI
             permalink: organization.permalink
           },
           api_key: api_credential.key,
+          smtp_key: smtp_credential.key,
           already_exists: true
         }
         
@@ -128,6 +140,12 @@ module LegacyAPI
           key: SecureRandom.alphanumeric(24).downcase
         )
         
+        # Create a default SMTP credential for the server
+        smtp_credential = server.credentials.create(
+          type: "SMTP",
+          name: "Default SMTP Credential"
+        )
+        
         # Build response with IP pool info if applicable
         response_data = {
           uuid: server.uuid,
@@ -141,6 +159,7 @@ module LegacyAPI
             permalink: organization.permalink
           },
           api_key: api_credential.key,
+          smtp_key: smtp_credential.key,
           already_exists: false
         }
         
