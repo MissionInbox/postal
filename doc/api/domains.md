@@ -61,37 +61,23 @@ curl -X POST \
         "uuid": "domain-uuid-1",
         "name": "example.com",
         "verified": true,
-        "verified_at": "2023-01-01T12:00:00.000Z",
-        "verification_method": "DNS",
-        "dns_checked_at": "2023-01-10T15:30:00.000Z",
         "spf_status": "OK",
         "dkim_status": "OK",
         "mx_status": "OK",
         "return_path_status": "OK",
-        "outgoing": true,
-        "incoming": true,
-        "created_at": "2023-01-01T12:00:00.000Z",
-        "updated_at": "2023-01-10T15:30:00.000Z",
         "stats": {
           "messages_sent_today": 523,
           "messages_sent_this_month": 15834
         }
       },
       {
-        "uuid": "domain-uuid-2",
+        "uuid": "domain-uuid-2", 
         "name": "mail.example.org",
         "verified": true,
-        "verified_at": "2023-01-05T09:15:00.000Z",
-        "verification_method": "DNS",
-        "dns_checked_at": "2023-01-10T15:30:00.000Z",
         "spf_status": "OK",
         "dkim_status": "OK",
         "mx_status": "OK",
         "return_path_status": "OK",
-        "outgoing": true,
-        "incoming": true,
-        "created_at": "2023-01-05T09:15:00.000Z",
-        "updated_at": "2023-01-10T15:30:00.000Z",
         "stats": {
           "messages_sent_today": 312,
           "messages_sent_this_month": 8721
@@ -112,6 +98,8 @@ curl -X POST \
 
 **URL:** `/api/v1/domains/create`  
 **Method:** POST  
+
+Creates a new domain and automatically verifies it. If the domain already exists, returns the existing domain information.
 
 #### Parameters
 
@@ -143,12 +131,41 @@ curl -X POST \
       "uuid": "domain-uuid",
       "name": "example.com",
       "verification_method": "DNS",
-      "verified": false,
+      "verified": true,
       "verification_token": "verification-token",
       "dns_verification_string": "postal-verify verification-token",
       "created_at": "2023-01-01T12:00:00.000Z",
       "updated_at": "2023-01-01T12:00:00.000Z"
-    }
+    },
+    "dns_records": [
+      {
+        "type": "TXT",
+        "name": "example.com",
+        "value": "v=spf1 a mx include:spf.postal.example.com ~all",
+        "purpose": "spf"
+      },
+      {
+        "type": "TXT",
+        "name": "postal-abc123._domainkey.example.com",
+        "short_name": "postal-abc123._domainkey",
+        "value": "v=DKIM1; t=s; h=sha256; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCuGbIaO4c5rhYkHPMYMH/Cg8zRW...",
+        "purpose": "dkim"
+      },
+      {
+        "type": "CNAME",
+        "name": "rp.example.com",
+        "short_name": "rp",
+        "value": "return.postal.example.com",
+        "purpose": "return_path"
+      },
+      {
+        "type": "MX",
+        "name": "example.com",
+        "priority": 10,
+        "value": "mx.postal.example.com",
+        "purpose": "mx"
+      }
+    ]
   }
 }
 ```
@@ -226,11 +243,13 @@ curl -X POST \
 **URL:** `/api/v1/domains/verify`  
 **Method:** POST  
 
+Verifies a domain by checking DNS records and provides detailed DNS status information.
+
 #### Parameters
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| domain_id | String | Yes | The UUID of the domain to verify |
+| name | String | Yes | The domain name to verify |
 
 #### Example Request
 
@@ -240,7 +259,7 @@ curl -X POST \
   -H 'Content-Type: application/json' \
   -H 'X-Server-API-Key: YOUR_API_KEY' \
   -d '{
-    "domain_id": "domain-uuid"
+    "name": "example.com"
   }'
 ```
 
@@ -256,7 +275,25 @@ curl -X POST \
       "uuid": "domain-uuid",
       "name": "example.com",
       "verified": true,
-      "verified_at": "2023-01-01T12:00:00.000Z"
+      "verified_at": "2023-01-01T12:00:00.000Z",
+      "dns_checks": {
+        "spf": {
+          "status": "OK",
+          "error": null
+        },
+        "dkim": {
+          "status": "OK", 
+          "error": null
+        },
+        "return_path": {
+          "status": "OK",
+          "error": null
+        },
+        "mx": {
+          "status": "OK",
+          "error": null
+        }
+      }
     }
   }
 }
@@ -272,7 +309,25 @@ curl -X POST \
   "data": {
     "code": "VerificationFailed",
     "message": "We couldn't verify your domain. Please double check you've added the TXT record correctly.",
-    "dns_verification_string": "postal-verify verification-token"
+    "dns_verification_string": "postal-verify verification-token",
+    "dns_checks": {
+      "spf": {
+        "status": "Missing",
+        "error": "SPF record not found"
+      },
+      "dkim": {
+        "status": "Missing",
+        "error": "DKIM record not found"
+      },
+      "return_path": {
+        "status": "Missing",
+        "error": "Return path record not found"
+      },
+      "mx": {
+        "status": "OK",
+        "error": null
+      }
+    }
   }
 }
 ```
@@ -282,13 +337,18 @@ curl -X POST \
 **URL:** `/api/v1/domains/dns_records`  
 **Method:** POST  
 
+Retrieves DNS records for a domain and provides current DNS check status.
+
 #### Parameters
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| domain_id | String | Yes | The UUID of the domain to get DNS records for |
+| domain_id | String | No | The UUID of the domain to get DNS records for |
+| domain_name | String | No | The name of the domain to get DNS records for |
 
-#### Example Request
+**Note:** Either `domain_id` or `domain_name` is required.
+
+#### Example Request (with domain_id)
 
 ```bash
 curl -X POST \
@@ -297,6 +357,18 @@ curl -X POST \
   -H 'X-Server-API-Key: YOUR_API_KEY' \
   -d '{
     "domain_id": "domain-uuid"
+  }'
+```
+
+#### Example Request (with domain_name)
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/domains/dns_records \
+  -H 'Content-Type: application/json' \
+  -H 'X-Server-API-Key: YOUR_API_KEY' \
+  -d '{
+    "domain_name": "example.com"
   }'
 ```
 
@@ -311,7 +383,25 @@ curl -X POST \
     "domain": {
       "uuid": "domain-uuid",
       "name": "example.com",
-      "verified": true
+      "verified": true,
+      "dns_checks": {
+        "spf": {
+          "status": "OK",
+          "error": null
+        },
+        "dkim": {
+          "status": "OK",
+          "error": null
+        },
+        "return_path": {
+          "status": "OK",
+          "error": null
+        },
+        "mx": {
+          "status": "OK",
+          "error": null
+        }
+      }
     },
     "dns_records": [
       {
