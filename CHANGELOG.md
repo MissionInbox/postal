@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.45.0](https://github.com/MissionInbox/postal/compare/3.44.0...3.45.0) (2025-09-04)
+
+
+### Features
+
+* add email sent amount api ([184a8c0](https://github.com/MissionInbox/postal/commit/184a8c0f94d1b98fdf4e3345d26d6e13e212f662))
+* update domains api documentation ([d9423b7](https://github.com/MissionInbox/postal/commit/d9423b787d874a9cb4068f1b81332844f4d7f691))
+
 ## [3.44.0](https://github.com/MissionInbox/postal/compare/3.43.0...3.44.0) (2025-08-26)
 
 
