@@ -313,20 +313,21 @@ curl -X POST \
               "spam": 1,
               "held": 0
             }
-          },
+          }
           // ... more hourly entries
         ]
       }
     }
   }
 }
+```
 
-### Get Email Sent Amounts
+### Get Email Statistics
 
-**URL:** `/api/v1/servers/email_sent_amounts`  
+**URL:** `/api/v1/servers/email-stats`  
 **Method:** POST  
 
-Returns the amount of emails sent within a specified date range for each server in the organization. This endpoint provides aggregated statistics for sent (outgoing) emails across all servers.
+Returns the amount of emails sent within a specified date range for the authenticated server. This endpoint provides aggregated statistics for sent (outgoing) emails for the server associated with the API key.
 
 #### Parameters
 
@@ -339,7 +340,7 @@ Returns the amount of emails sent within a specified date range for each server 
 
 ```bash
 curl -X POST \
-  https://postal.example.com/api/v1/servers/email_sent_amounts \
+  https://postal.example.com/api/v1/servers/email-stats \
   -H 'Content-Type: application/json' \
   -H 'X-Server-API-Key: YOUR_API_KEY' \
   -d '{
@@ -353,33 +354,17 @@ curl -X POST \
 ```json
 {
   "status": "success",
-  "time": 0.245,
+  "time": 0.145,
   "flags": {},
   "data": {
     "start_date": "2025-01-01T00:00:00Z",
     "end_date": "2025-01-31T23:59:59Z",
-    "total_sent_emails": 125847,
-    "servers_count": 3,
-    "servers": [
-      {
-        "uuid": "server-uuid-1",
-        "name": "Marketing Server",
-        "permalink": "marketing-server",
-        "sent_emails": 89432
-      },
-      {
-        "uuid": "server-uuid-2", 
-        "name": "Transactional Server",
-        "permalink": "transactional-server",
-        "sent_emails": 34521
-      },
-      {
-        "uuid": "server-uuid-3",
-        "name": "Development Server",
-        "permalink": "development-server",
-        "sent_emails": 1894
-      }
-    ]
+    "server": {
+      "uuid": "server-uuid-1",
+      "name": "Marketing Server",
+      "permalink": "marketing-server",
+      "sent_emails": 89432
+    }
   }
 }
 ```
@@ -390,13 +375,11 @@ curl -X POST \
 |-------|------|-------------|
 | start_date | String | The start date of the range in ISO 8601 format |
 | end_date | String | The end date of the range in ISO 8601 format |
-| total_sent_emails | Integer | Total number of emails sent across all servers in the date range |
-| servers_count | Integer | Number of servers in the organization |
-| servers | Array | Array of server objects with their email statistics |
-| servers[].uuid | String | The server's unique identifier |
-| servers[].name | String | The server's name |
-| servers[].permalink | String | The server's URL-friendly permalink |
-| servers[].sent_emails | Integer | Number of emails sent by this server in the date range |
+| server | Object | Server object with email statistics |
+| server.uuid | String | The server's unique identifier |
+| server.name | String | The server's name |
+| server.permalink | String | The server's URL-friendly permalink |
+| server.sent_emails | Integer | Number of emails sent by this server in the date range |
 
 #### Error Responses
 
@@ -439,9 +422,8 @@ curl -X POST \
 #### Notes
 
 - The endpoint requires authentication using a Server API key in the `X-Server-API-Key` header
-- Statistics are retrieved from the organization that the authenticated server belongs to
-- All servers in the organization are included in the response, sorted by sent email count (descending)
+- Statistics are retrieved only for the server associated with the API key used for authentication
 - Date range is inclusive of both start and end dates
 - The system aggregates daily statistics to calculate totals for the specified range
-- If statistics cannot be retrieved for a specific server, it will be included with `sent_emails: 0` and may include an `error` field
+- If statistics cannot be retrieved for the server, it will be included with `sent_emails: 0` and may include an `error` field
 ```

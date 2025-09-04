@@ -2,7 +2,7 @@
 
 module LegacyAPI
   class ServersStatisticsController < BaseController
-    def email_sent_amounts
+    def email_stats
       # Get parameters
       start_date = api_params["start_date"]
       end_date = api_params["end_date"]
@@ -38,58 +38,43 @@ module LegacyAPI
       
       # Get current server (from authentication)
       current_server = @current_credential.server
-      organization = current_server.organization
       
-      # Get all servers in the organization
-      servers = organization.servers.present
-      
-      # Calculate statistics for each server
-      server_stats = []
-      total_sent = 0
-      
-      servers.each do |server|
-        begin
-          # Get daily statistics for the date range
-          stats_data = server.message_db.statistics.get(:daily, [:outgoing], parsed_end_date, days_diff)
-          
-          # Sum up the sent emails for the date range
-          sent_count = 0
-          stats_data.each do |date, stats|
-            # Only count statistics within our date range
-            if date >= parsed_start_date && date <= parsed_end_date
-              sent_count += stats[:outgoing] || 0
-            end
+      # Calculate statistics for the authenticated server only
+      begin
+        # Get daily statistics for the date range
+        stats_data = current_server.message_db.statistics.get(:daily, [:outgoing], parsed_end_date, days_diff)
+        
+        # Sum up the sent emails for the date range
+        sent_count = 0
+        stats_data.each do |date, stats|
+          # Only count statistics within our date range
+          if date >= parsed_start_date && date <= parsed_end_date
+            sent_count += stats[:outgoing] || 0
           end
-          
-          total_sent += sent_count
-          
-          server_stats << {
-            uuid: server.uuid,
-            name: server.name,
-            permalink: server.permalink,
-            sent_emails: sent_count
-          }
-        rescue => e
-          # Handle any errors getting statistics for individual servers
-          server_stats << {
-            uuid: server.uuid,
-            name: server.name,
-            permalink: server.permalink,
-            sent_emails: 0,
-            error: "Unable to retrieve statistics"
-          }
         end
+        
+        server_info = {
+          uuid: current_server.uuid,
+          name: current_server.name,
+          permalink: current_server.permalink,
+          sent_emails: sent_count
+        }
+      rescue => e
+        # Handle any errors getting statistics
+        server_info = {
+          uuid: current_server.uuid,
+          name: current_server.name,
+          permalink: current_server.permalink,
+          sent_emails: 0,
+          error: "Unable to retrieve statistics"
+        }
+        sent_count = 0
       end
-      
-      # Sort servers by sent count (descending)
-      server_stats.sort_by! { |s| -(s[:sent_emails] || 0) }
       
       render_success({
         start_date: parsed_start_date.iso8601,
         end_date: parsed_end_date.iso8601,
-        total_sent_emails: total_sent,
-        servers_count: servers.count,
-        servers: server_stats
+        server: server_info
       })
     end
   end
