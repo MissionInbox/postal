@@ -426,4 +426,162 @@ curl -X POST \
 - Date range is inclusive of both start and end dates
 - The system aggregates daily statistics to calculate totals for the specified range
 - If statistics cannot be retrieved for the server, it will be included with `sent_emails: 0` and may include an `error` field
+
+### Update Server Mode
+
+**URL:** `/api/v1/servers/update-mode`  
+**Method:** POST  
+
+Updates the mode of the authenticated server (switches between Live and Development environments).
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| mode | String | Yes | The server mode, either "Live" or "Development" |
+
+#### Example Request
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/servers/update-mode \
+  -H 'Content-Type: application/json' \
+  -H 'X-Server-API-Key: YOUR_API_KEY' \
+  -d '{
+    "mode": "Development"
+  }'
+```
+
+#### Example Response
+
+```json
+{
+  "status": "success",
+  "time": 0.085,
+  "flags": {},
+  "data": {
+    "server": {
+      "uuid": "server-uuid-1",
+      "name": "Marketing Server", 
+      "permalink": "marketing-server",
+      "mode": "Development",
+      "updated_at": "2025-09-04T14:30:00.000Z"
+    }
+  }
+}
+```
+
+#### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| server | Object | Updated server object |
+| server.uuid | String | The server's unique identifier |
+| server.name | String | The server's name |
+| server.permalink | String | The server's URL-friendly permalink |
+| server.mode | String | The updated server mode ("Live" or "Development") |
+| server.updated_at | String | Server update timestamp |
+
+#### Error Responses
+
+**Missing Mode Parameter:**
+```json
+{
+  "status": "parameter-error",
+  "time": 0.012,
+  "flags": {},
+  "data": {
+    "message": "mode is required"
+  }
+}
+```
+
+**Invalid Mode Value:**
+```json
+{
+  "status": "parameter-error",
+  "time": 0.015,
+  "flags": {},
+  "data": {
+    "message": "mode must be either 'Live' or 'Development'"
+  }
+}
+```
+
+#### Notes
+
+- The endpoint requires authentication using a Server API key in the `X-Server-API-Key` header
+- Only the server associated with the API key can be updated
+- "Live" mode is for production environments, "Development" mode is for testing/development
+
+### Delete Server
+
+**URL:** `/api/v1/servers/delete`  
+**Method:** POST/DELETE  
+
+Deletes the authenticated server (soft delete).
+
+#### Parameters
+
+None required.
+
+#### Example Request
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/servers/delete \
+  -H 'Content-Type: application/json' \
+  -H 'X-Server-API-Key: YOUR_API_KEY' \
+  -d '{}'
+```
+
+#### Example Response
+
+```json
+{
+  "status": "success",
+  "time": 0.125,
+  "flags": {},
+  "data": {
+    "deleted": true,
+    "server": {
+      "uuid": "server-uuid-1",
+      "name": "Marketing Server",
+      "permalink": "marketing-server"
+    }
+  }
+}
+```
+
+#### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| deleted | Boolean | Confirms the server was deleted (always true on success) |
+| server | Object | Information about the deleted server |
+| server.uuid | String | The deleted server's unique identifier |
+| server.name | String | The deleted server's name |
+| server.permalink | String | The deleted server's URL-friendly permalink |
+
+#### Error Responses
+
+**Deletion Failed:**
+```json
+{
+  "status": "error",
+  "time": 0.045,
+  "flags": {},
+  "data": {
+    "code": "DeletionError",
+    "message": "The server could not be deleted"
+  }
+}
+```
+
+#### Notes
+
+- The endpoint requires authentication using a Server API key in the `X-Server-API-Key` header
+- Only the server associated with the API key can be deleted
+- This performs a soft delete - the server is marked as deleted but data is preserved
+- After deletion, the API key will no longer be valid for authentication
 ```

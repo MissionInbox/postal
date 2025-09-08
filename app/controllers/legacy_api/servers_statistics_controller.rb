@@ -77,5 +77,59 @@ module LegacyAPI
         server: server_info
       })
     end
+    
+    def update_mode
+      # Get parameters
+      mode = api_params["mode"]
+      
+      # Validate required parameters
+      if mode.blank?
+        render_parameter_error("mode is required")
+        return
+      end
+      
+      # Validate mode value
+      unless ["Live", "Development"].include?(mode)
+        render_parameter_error("mode must be either 'Live' or 'Development'")
+        return
+      end
+      
+      # Get current server (from authentication)
+      current_server = @current_credential.server
+      
+      # Update the server mode
+      if current_server.update(mode: mode)
+        render_success({
+          server: {
+            uuid: current_server.uuid,
+            name: current_server.name,
+            permalink: current_server.permalink,
+            mode: current_server.mode,
+            updated_at: current_server.updated_at
+          }
+        })
+      else
+        render_error "UpdateError", message: "The server mode could not be updated", errors: current_server.errors.full_messages
+      end
+    end
+    
+    def delete_server
+      # Get current server (from authentication)
+      current_server = @current_credential.server
+      
+      # Soft delete the server (using HasSoftDestroy module)
+      if current_server.soft_destroy
+        render_success({
+          deleted: true,
+          server: {
+            uuid: current_server.uuid,
+            name: current_server.name,
+            permalink: current_server.permalink
+          }
+        })
+      else
+        render_error "DeletionError", message: "The server could not be deleted"
+      end
+    end
   end
 end
