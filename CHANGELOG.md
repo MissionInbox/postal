@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.46.0](https://github.com/MissionInbox/postal/compare/3.45.1...3.46.0) (2025-09-09)
+
+
+### Features
+
+* servers activate, delete api ([59ab520](https://github.com/MissionInbox/postal/commit/59ab5206efdc365efab74c099d6168d97fbb0abe))
+
 ## [3.45.1](https://github.com/MissionInbox/postal/compare/3.45.0...3.45.1) (2025-09-04)
 
 
