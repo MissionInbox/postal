@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   match "/api/v1/servers/ip_pools/create" => "legacy_api/ip_pools#create", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/ip_pools/least_used" => "legacy_api/ip_pools#least_used", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/email-stats" => "legacy_api/servers_statistics#email_stats", via: [:get, :post, :patch, :put]
+  match "/api/v1/servers/update-mode" => "legacy_api/servers_statistics#update_mode", via: [:get, :post, :patch, :put]
+  match "/api/v1/servers/delete" => "legacy_api/servers_statistics#delete_server", via: [:get, :post, :patch, :put, :delete]
 
   scope "org/:org_permalink", as: "organization" do
     resources :domains, only: [:index, :new, :create, :destroy] do
