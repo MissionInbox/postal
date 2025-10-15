@@ -405,7 +405,7 @@ module Postal
       # Does this message have our DKIM header yet?
       #
       def has_outgoing_headers?
-        !!(raw_headers =~ /^X-MI-unique:/i)
+        !!(raw_headers =~ /^X-MI-Unique:/i)
       end
 
       #
@@ -417,7 +417,7 @@ module Postal
           dkim = DKIMHeader.new(domain, raw_message)
           headers << dkim.dkim_header
         end
-        headers << "X-MI-unique: #{token}"
+        headers << "X-MI-Unique: #{token}"
         append_headers(*headers)
       end
 
@@ -500,7 +500,7 @@ module Postal
       def original_messages
         return nil unless bounce
 
-        other_message_ids = raw_message.scan(/\X-Postal-MsgID:\s*([a-z0-9]+)/i).flatten
+        other_message_ids = raw_message.scan(/\X-MI-Unique:\s*([a-z0-9]+)/i).flatten
         if other_message_ids.empty?
           []
         else
