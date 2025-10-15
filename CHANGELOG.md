@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.47.0](https://github.com/MissionInbox/postal/compare/3.46.0...3.47.0) (2025-10-15)
+
+
+### Features
+
+* rename X-MI-unique header to X-MI-Unique for consistency ([5384795](https://github.com/MissionInbox/postal/commit/53847958e0fbf24b1807572d302b4a7bf9f00258))
+
 ## [3.46.0](https://github.com/MissionInbox/postal/compare/3.45.1...3.46.0) (2025-09-09)
 
 
