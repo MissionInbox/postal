@@ -36,6 +36,7 @@
       - else
         When messages cannot be delivered, addresses are added to the suppression list which stops
         future messages to the same recipient being sent through. Recipients are removed from the list after #{Postal::Config.postal.default_suppression_list_automatic_removal_days} days.
+        = link_to "Download CSV", download_suppressions_organization_server_messages_path(organization, @server), class: "button button--small button--neutral u-margin-l5"
         = link_to "Remove All", remove_all_suppressions_organization_server_messages_path(organization, @server), class: "button button--small button--danger u-margin-l5", method: :delete, data: { confirm: "Are you sure you want to remove ALL addresses from the suppression list? This action cannot be undone." }
     %ul.suppressionList
       - for suppression in @suppressions[:records]

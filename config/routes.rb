@@ -73,6 +73,7 @@ Rails.application.routes.draw do
         post :retry, on: :member
         post :cancel_hold, on: :member
         get :suppressions, on: :collection
+        get :download_suppressions, on: :collection
         delete :remove_suppression, on: :collection
         delete :remove_all_suppressions, on: :collection
         delete :remove_from_queue, on: :member
