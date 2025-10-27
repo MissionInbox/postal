@@ -172,6 +172,44 @@ class MessagesController < ApplicationController
     end
     redirect_to suppressions_organization_server_messages_path(organization, @server)
   end
+
+  def download_suppressions
+    require 'csv'
+
+    # Fetch all suppressions without pagination
+    all_suppressions = []
+    page = 1
+    per_page = 100
+
+    loop do
+      result = @server.message_db.suppression_list.all_with_pagination(page, per_page: per_page)
+      all_suppressions.concat(result[:records])
+      break if result[:records].empty? || all_suppressions.size >= result[:total]
+      page += 1
+    end
+
+    # Generate CSV
+    csv_data = CSV.generate do |csv|
+      # Add headers
+      csv << ['Email Address', 'Reason', 'Added At', 'Expires At']
+
+      # Add data rows
+      all_suppressions.each do |suppression|
+        csv << [
+          suppression['address'],
+          suppression['reason']&.capitalize,
+          suppression['timestamp'] ? Time.zone.at(suppression['timestamp']).iso8601 : '',
+          suppression['keep_until'] ? Time.zone.at(suppression['keep_until']).iso8601 : ''
+        ]
+      end
+    end
+
+    # Send the CSV file
+    send_data csv_data,
+              filename: "suppressions-#{@server.permalink}-#{Time.now.strftime('%Y%m%d-%H%M%S')}.csv",
+              type: 'text/csv',
+              disposition: 'attachment'
+  end
   
   def purge_held_messages
     # Find all held messages

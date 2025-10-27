@@ -23,8 +23,8 @@ module Postal
         @database.select("suppressions", where: { type: type, address: address, keep_until: { greater_than_or_equal_to: Time.now.to_f } }, limit: 1).first
       end
 
-      def all_with_pagination(page)
-        @database.select_with_pagination(:suppressions, page, order: :timestamp, direction: "desc")
+      def all_with_pagination(page, per_page: 30)
+        @database.select_with_pagination(:suppressions, page, order: :timestamp, direction: "desc", per_page: per_page)
       end
       
       def search_with_pagination(page, email)

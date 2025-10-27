@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   match "/api/v1/servers/email-stats" => "legacy_api/servers_statistics#email_stats", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/update-mode" => "legacy_api/servers_statistics#update_mode", via: [:get, :post, :patch, :put]
   match "/api/v1/servers/delete" => "legacy_api/servers_statistics#delete_server", via: [:get, :post, :patch, :put, :delete]
+  match "/api/v1/suppressions/list" => "legacy_api/suppressions#list", via: [:get, :post, :patch, :put]
 
   scope "org/:org_permalink", as: "organization" do
     resources :domains, only: [:index, :new, :create, :destroy] do
@@ -72,6 +73,7 @@ Rails.application.routes.draw do
         post :retry, on: :member
         post :cancel_hold, on: :member
         get :suppressions, on: :collection
+        get :download_suppressions, on: :collection
         delete :remove_suppression, on: :collection
         delete :remove_all_suppressions, on: :collection
         delete :remove_from_queue, on: :member
