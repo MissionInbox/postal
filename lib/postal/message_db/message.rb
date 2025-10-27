@@ -500,11 +500,40 @@ module Postal
       def original_messages
         return nil unless bounce
 
-        other_message_ids = raw_message.scan(/\X-MI-Unique:\s*([a-z0-9]+)/i).flatten
+        # Define headers to scan for message IDs/tokens
+        headers_to_scan = [
+          'X-MI-Unique',
+          'X-Original-Message-ID',
+          'In-Reply-To',
+          'References',
+          'X-Postal-Message-ID',
+          'X-Postal-MsgID'
+        ]
+
+        other_message_ids = []
+
+        # Scan for each header type
+        headers_to_scan.each do |header|
+          case header
+          when 'X-MI-Unique', 'X-Postal-Message-ID'
+            # Extract alphanumeric tokens
+            ids = raw_message.scan(/#{Regexp.escape(header)}:\s*([a-z0-9]+)/i).flatten
+            other_message_ids.concat(ids)
+          when 'In-Reply-To', 'References', 'X-Original-Message-ID'
+            # Extract message IDs in angle brackets or plain format
+            ids = raw_message.scan(/#{Regexp.escape(header)}:\s*<?([^>\s]+)>?/i).flatten
+            other_message_ids.concat(ids)
+          end
+        end
+
+        other_message_ids = other_message_ids.compact.uniq
+
         if other_message_ids.empty?
           []
         else
-          database.messages(where: { token: other_message_ids })
+          # Search for messages by both token and message_id in a single query
+          messages = database.messages(where: "token IN (#{other_message_ids.map { |id| database.escape(id) }.join(',')}) OR message_id IN (#{other_message_ids.map { |id| database.escape(id) }.join(',')})")
+          messages
         end
       end
 
