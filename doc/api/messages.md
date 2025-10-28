@@ -266,6 +266,78 @@ curl -X POST \
 }
 ```
 
+### Get Suppressions List
+
+**URL:** `/api/v1/suppressions/list`
+**Method:** POST, GET, PUT, PATCH
+
+Returns a paginated list of suppressed email addresses. Suppressed addresses are blocked from receiving messages through the server.
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| page | Integer | No | The page number (default: 1) |
+| per_page | Integer | No | Number of items per page (default: 30, max: 100) |
+
+#### Example Request
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/suppressions/list \
+  -H 'Content-Type: application/json' \
+  -H 'X-Server-API-Key: YOUR_API_KEY' \
+  -d '{
+    "page": 1,
+    "per_page": 30
+  }'
+```
+
+#### Example Response
+
+```json
+{
+  "status": "success",
+  "time": 0.042,
+  "flags": {},
+  "data": {
+    "suppressions": [
+      {
+        "email": "bounced@example.com",
+        "reason": "HardFail",
+        "createdAt": "2025-10-15T14:30:00Z",
+        "expireAt": "2025-11-14T14:30:00Z"
+      },
+      {
+        "email": "complaint@example.com",
+        "reason": "ManualSuppression",
+        "createdAt": "2025-10-20T09:15:00Z",
+        "expireAt": "2025-11-19T09:15:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "per_page": 30,
+      "total": 150,
+      "total_pages": 5
+    }
+  }
+}
+```
+
+#### Suppression Fields
+
+- **email** - The suppressed email address (string)
+- **reason** - Reason for suppression (string)
+- **createdAt** - When the suppression was created (ISO 8601 timestamp or null)
+- **expireAt** - When the suppression will expire (ISO 8601 timestamp or null)
+
+#### Common Suppression Reasons
+
+- **HardFail** - Message bounced with a permanent failure
+- **ManualSuppression** - Manually added to the suppression list
+- **Complaint** - Recipient marked the message as spam
+
 ## Message Status Values
 
 Messages can have the following status values:
