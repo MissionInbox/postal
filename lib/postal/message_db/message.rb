@@ -495,46 +495,43 @@ module Postal
       end
 
       #
-      # Return a message object that this message is a reply to
+      # Return any original messages this bounce relates to.
+      # Always returns an array (empty if none or not a bounce).
+      # Parses potential original message identifiers from common headers
+      # and performs up to two indexed lookups (message_id & token), then
+      # deduplicates results.
       #
       def original_messages
-        return nil unless bounce
+        return [] unless bounce
 
-        # Define headers to scan for message IDs/tokens
-        headers_to_scan = [
-          'X-MI-Unique',
-          'X-Original-Message-ID',
-          'In-Reply-To',
-          'References',
-          'X-Postal-Message-ID',
-          'X-Postal-MsgID'
-        ]
+        msgid_headers = %w[in-reply-to references x-original-message-id]
+        token_headers = %w[x-postal-message-id x-postal-msgid x-mi-unique]
 
-        other_message_ids = []
-
-        # Scan for each header type
-        headers_to_scan.each do |header|
-          case header
-          when 'X-MI-Unique', 'X-Postal-Message-ID'
-            # Extract alphanumeric tokens
-            ids = raw_message.scan(/#{Regexp.escape(header)}:\s*([a-z0-9]+)/i).flatten
-            other_message_ids.concat(ids)
-          when 'In-Reply-To', 'References', 'X-Original-Message-ID'
-            # Extract message IDs in angle brackets or plain format
-            ids = raw_message.scan(/#{Regexp.escape(header)}:\s*<?([^>\s]+)>?/i).flatten
-            other_message_ids.concat(ids)
+        message_ids = msgid_headers.flat_map do |header_name|
+          next [] unless (values = headers[header_name])
+          values.flat_map do |raw|
+            raw.to_s.split(/[\s,]+/).map { |id| id.gsub(/.*</, "").gsub(/>.*/, "").strip }
           end
         end
 
-        other_message_ids = other_message_ids.compact.uniq
-
-        if other_message_ids.empty?
-          []
-        else
-          # Search for messages by both token and message_id in a single query
-          messages = database.messages(where: "token IN (#{other_message_ids.map { |id| database.escape(id) }.join(',')}) OR message_id IN (#{other_message_ids.map { |id| database.escape(id) }.join(',')})")
-          messages
+        tokens = token_headers.flat_map do |header_name|
+          next [] unless (values = headers[header_name])
+          values.map { |raw| raw.to_s.strip }
         end
+
+        message_ids = message_ids.compact.reject(&:empty?).uniq
+        tokens      = tokens.compact.reject(&:empty?).uniq
+
+        return [] if message_ids.empty? && tokens.empty?
+
+        records = []
+        records.concat(database.select("messages", where: { message_id: message_ids })) unless message_ids.empty?
+        records.concat(database.select("messages", where: { token: tokens })) unless tokens.empty?
+
+        deduped = {}
+        records.each { |r| deduped[r["id"]] ||= r }
+
+        deduped.values.map { |attrs| Message.new(database, attrs) }
       end
 
       #
