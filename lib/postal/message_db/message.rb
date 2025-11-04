@@ -499,7 +499,7 @@ module Postal
       # Always returns an array (empty if none or not a bounce).
       # Parses potential original message identifiers from common headers
       # and performs up to two indexed lookups (message_id & token), then
-      # deduplicates results.
+      # deduplicates results. This should handle the vast majority of return path emails.
       #
       def original_messages
         return [] unless bounce
