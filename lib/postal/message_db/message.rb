@@ -495,17 +495,43 @@ module Postal
       end
 
       #
-      # Return a message object that this message is a reply to
+      # Return any original messages this bounce relates to.
+      # Always returns an array (empty if none or not a bounce).
+      # Parses potential original message identifiers from common headers
+      # and performs up to two indexed lookups (message_id & token), then
+      # deduplicates results.
       #
       def original_messages
-        return nil unless bounce
+        return [] unless bounce
 
-        other_message_ids = raw_message.scan(/\X-MI-Unique:\s*([a-z0-9]+)/i).flatten
-        if other_message_ids.empty?
-          []
-        else
-          database.messages(where: { token: other_message_ids })
+        msgid_headers = %w[in-reply-to references x-original-message-id]
+        token_headers = %w[x-postal-message-id x-postal-msgid x-mi-unique]
+
+        message_ids = msgid_headers.flat_map do |header_name|
+          next [] unless (values = headers[header_name])
+          values.flat_map do |raw|
+            raw.to_s.split(/[\s,]+/).map { |id| id.gsub(/.*</, "").gsub(/>.*/, "").strip }
+          end
         end
+
+        tokens = token_headers.flat_map do |header_name|
+          next [] unless (values = headers[header_name])
+          values.map { |raw| raw.to_s.strip }
+        end
+
+        message_ids = message_ids.compact.reject(&:empty?).uniq
+        tokens      = tokens.compact.reject(&:empty?).uniq
+
+        return [] if message_ids.empty? && tokens.empty?
+
+        records = []
+        records.concat(database.select("messages", where: { message_id: message_ids })) unless message_ids.empty?
+        records.concat(database.select("messages", where: { token: tokens })) unless tokens.empty?
+
+        deduped = {}
+        records.each { |r| deduped[r["id"]] ||= r }
+
+        deduped.values.map { |attrs| Message.new(database, attrs) }
       end
 
       #
