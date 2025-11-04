@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.49.1](https://github.com/MissionInbox/postal/compare/3.49.0...3.49.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* original message comment to trigger release ([fc79937](https://github.com/MissionInbox/postal/commit/fc799375ba721bc552278fa2325b21c406fd6ad9))
+
 ## [3.49.0](https://github.com/MissionInbox/postal/compare/3.48.0...3.49.0) (2025-11-04)
 
 
