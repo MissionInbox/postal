@@ -111,15 +111,17 @@ module LegacyAPI
 
     # Count total emails sent through a specific IP address
     def count_emails_for_ip(ip_address)
-      QueuedMessage.where(ip_address_id: ip_address.id).count
+      # QueuedMessage.where(ip_address_id: ip_address.id).count
+      0
     end
 
     # Count total emails sent through an IP pool
     def count_emails_for_ip_pool(ip_pool)
-      ip_address_ids = ip_pool.ip_addresses.pluck(:id)
-      return 0 if ip_address_ids.empty?
+      # ip_address_ids = ip_pool.ip_addresses.pluck(:id)
+      # return 0 if ip_address_ids.empty?
 
-      QueuedMessage.where(ip_address_id: ip_address_ids).count
+      # QueuedMessage.where(ip_address_id: ip_address_ids).count
+       0
     end
 
     # Count total emails sent through a server
