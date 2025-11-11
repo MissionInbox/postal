@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.51.0](https://github.com/MissionInbox/postal/compare/3.50.0...3.51.0) (2025-11-11)
+
+
+### Features
+
+* count outbound email only for servers ([c721ee4](https://github.com/MissionInbox/postal/commit/c721ee43d91d61f345975c5469d4816e4781e167))
+
 ## [3.50.0](https://github.com/MissionInbox/postal/compare/3.49.1...3.50.0) (2025-11-11)
 
 
