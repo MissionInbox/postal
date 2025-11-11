@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.50.0](https://github.com/MissionInbox/postal/compare/3.49.1...3.50.0) (2025-11-11)
+
+
+### Features
+
+* add ip, ip pool, customer allocation stats api ([338a293](https://github.com/MissionInbox/postal/commit/338a2931941e4bacbdc70bfb21e01ed83c22de55))
+
 ## [3.49.1](https://github.com/MissionInbox/postal/compare/3.49.0...3.49.1) (2025-11-04)
 
 
