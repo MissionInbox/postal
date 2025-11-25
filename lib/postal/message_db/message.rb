@@ -181,6 +181,73 @@ module Postal
       #
       # Provide access to set and get acceptable attributes
       #
+      #
+      # Resolve MX records for a domain and return a hash for consistent batching.
+      # Domains with the same MX records will get the same hash, enabling batching
+      # of messages to different domains hosted on the same mail servers.
+      #
+      # Returns nil if MX resolution fails, falling back to domain-based batching.
+      #
+      # @param domain [String] the domain to resolve MX records for
+      # @return [String, nil] a hash of the MX records or nil on error
+      def self.mx_hash_for_domain(domain)
+        return nil if domain.blank?
+
+        # Check cache first (with 5 minute TTL)
+        cache_key = "mx_hash:#{domain}"
+        cached_value = mx_cache[cache_key]
+        if cached_value && cached_value[:expires_at] > Time.now
+          return cached_value[:hash]
+        end
+
+        # Resolve MX records
+        mx_records = DNSResolver.local.mx(domain, raise_timeout_errors: false)
+
+        # If no MX records, return nil to fall back to domain-based batching
+        return nil if mx_records.empty?
+
+        # Sort by hostname for consistency (ignore priority for batching purposes)
+        # This ensures domains with same MX servers but different priorities batch together
+        mx_hostnames = mx_records.map(&:last).sort.uniq
+
+        # Create a hash of the sorted MX hostnames
+        hash_value = Digest::SHA256.hexdigest(mx_hostnames.join("|"))[0, 16]
+
+        # Cache the result
+        mx_cache[cache_key] = {
+          hash: hash_value,
+          expires_at: Time.now + 300 # 5 minutes
+        }
+
+        hash_value
+      rescue StandardError => e
+        # On any DNS error, return nil to fall back to domain-based batching
+        Postal.logger.warn "Failed to resolve MX for #{domain}: #{e.message}"
+        nil
+      end
+
+      #
+      # Thread-safe cache for MX record hashes with automatic cleanup
+      #
+      def self.mx_cache
+        @mx_cache_mutex ||= Mutex.new
+        @mx_cache ||= {}
+
+        # Periodically clean up expired entries (every 100 accesses)
+        @mx_cache_access_count ||= 0
+        @mx_cache_access_count += 1
+
+        if @mx_cache_access_count >= 100
+          @mx_cache_mutex.synchronize do
+            now = Time.now
+            @mx_cache.delete_if { |_k, v| v[:expires_at] <= now }
+            @mx_cache_access_count = 0
+          end
+        end
+
+        @mx_cache
+      end
+
       def method_missing(name, value = nil, &block)
         if @attributes.key?(name.to_s)
           @attributes[name.to_s]
@@ -368,7 +435,9 @@ module Postal
         case scope
         when "outgoing"
           key = "outgoing-"
-          key += recipient_domain.to_s
+          # Use MX hash to batch messages to domains hosted on the same mail servers
+          mx_hash = self.class.mx_hash_for_domain(recipient_domain)
+          key += mx_hash || recipient_domain.to_s
         when "incoming"
           key = "incoming-"
           key += "rt:#{route_id}-ep:#{endpoint_id}-#{endpoint_type}"
