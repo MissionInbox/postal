@@ -2,6 +2,13 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.52.0](https://github.com/MissionInbox/postal/compare/3.51.0...3.52.0) (2025-12-03)
+
+
+### Features
+
+* MX batching ([88aab2d](https://github.com/MissionInbox/postal/commit/88aab2d8243673c50bbf3cffe884f3718944c2b5))
+
 ## [3.51.0](https://github.com/MissionInbox/postal/compare/3.50.0...3.51.0) (2025-11-11)
 
 
