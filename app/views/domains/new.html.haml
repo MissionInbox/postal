@@ -32,5 +32,19 @@
               an email with a code whcih you'll need to enter - you can choose from a set of pre-defined addresses for
               the domain. Using <b>DNS</b> you'll need to add a TXT record on this domain using your DNS provider.
 
+      .fieldSet__field
+        = f.label :custom_mx_records, "Custom MX Records (Optional)", :class => 'fieldSet__label'
+        .fieldSet__input
+          = f.text_area :custom_mx_records, :class => 'input input--text', :rows => 3, :placeholder => 'Enter MX records as JSON array, e.g., ["mx1.example.com", "mx2.example.com"]'
+          .fieldSet__text
+            Leave blank to use the default MX records from postal configuration. If specified, enter as a JSON array.
+
+      .fieldSet__field
+        = f.label :dmarc_record, "DMARC Record (Optional)", :class => 'fieldSet__label'
+        .fieldSet__input
+          = f.text_area :dmarc_record, :class => 'input input--text', :rows => 2, :placeholder => 'v=DMARC1; p=quarantine; rua=mailto:abuse@example.com; ruf=mailto:abuse@example.com; sp=quarantine; adkim=r; aspf=r; fo=1; ri=86400;'
+          .fieldSet__text
+            Enter the DMARC record value. Leave blank if you don't want to configure DMARC for this domain.
+
     .fieldSetSubmit
       = f.submit :class => "button button--positive js-form-submit"

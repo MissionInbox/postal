@@ -65,19 +65,21 @@ curl -X POST \
         "dkim_status": "OK",
         "mx_status": "OK",
         "return_path_status": "OK",
+        "dmarc_status": "OK",
         "stats": {
           "messages_sent_today": 523,
           "messages_sent_this_month": 15834
         }
       },
       {
-        "uuid": "domain-uuid-2", 
+        "uuid": "domain-uuid-2",
         "name": "mail.example.org",
         "verified": true,
         "spf_status": "OK",
         "dkim_status": "OK",
         "mx_status": "OK",
         "return_path_status": "OK",
+        "dmarc_status": "OK",
         "stats": {
           "messages_sent_today": 312,
           "messages_sent_this_month": 8721
@@ -106,8 +108,10 @@ Creates a new domain and automatically verifies it. If the domain already exists
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | name | String | Yes | The domain name to add |
+| custom_mx_records | String | No | JSON array of custom MX hostnames (e.g., `["mx1.example.com", "mx2.example.com"]`). If not provided, uses the global Postal MX configuration. |
+| dmarc_record | String | No | Custom DMARC record value (e.g., `v=DMARC1; p=quarantine; rua=mailto:abuse@example.com; ...`). If not provided, a default DMARC record is automatically generated. |
 
-#### Example Request
+#### Example Request (Basic)
 
 ```bash
 curl -X POST \
@@ -116,6 +120,20 @@ curl -X POST \
   -H 'X-Server-API-Key: YOUR_API_KEY' \
   -d '{
     "name": "example.com"
+  }'
+```
+
+#### Example Request (With Custom MX and DMARC)
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/domains/create \
+  -H 'Content-Type: application/json' \
+  -H 'X-Server-API-Key: YOUR_API_KEY' \
+  -d '{
+    "name": "example.com",
+    "custom_mx_records": "[\"mx1.example.com\", \"mx2.example.com\"]",
+    "dmarc_record": "v=DMARC1; p=quarantine; rua=mailto:abuse@example.com; ruf=mailto:abuse@example.com; sp=quarantine; adkim=r; aspf=r; fo=1; ri=864000;"
   }'
 ```
 
@@ -164,6 +182,12 @@ curl -X POST \
         "priority": 10,
         "value": "mx.postal.example.com",
         "purpose": "mx"
+      },
+      {
+        "type": "TXT",
+        "name": "_dmarc.example.com",
+        "value": "v=DMARC1; p=quarantine; rua=mailto:abuse@example.com; ruf=mailto:abuse@example.com; sp=quarantine; adkim=r; aspf=r; fo=1; ri=864000;",
+        "purpose": "dmarc"
       }
     ]
   }
@@ -282,7 +306,7 @@ curl -X POST \
           "error": null
         },
         "dkim": {
-          "status": "OK", 
+          "status": "OK",
           "error": null
         },
         "return_path": {
@@ -290,6 +314,10 @@ curl -X POST \
           "error": null
         },
         "mx": {
+          "status": "OK",
+          "error": null
+        },
+        "dmarc": {
           "status": "OK",
           "error": null
         }
@@ -326,6 +354,10 @@ curl -X POST \
       "mx": {
         "status": "OK",
         "error": null
+      },
+      "dmarc": {
+        "status": "Missing",
+        "error": "No DMARC record exists at _dmarc.example.com"
       }
     }
   }
@@ -400,6 +432,10 @@ curl -X POST \
         "mx": {
           "status": "OK",
           "error": null
+        },
+        "dmarc": {
+          "status": "OK",
+          "error": null
         }
       }
     },
@@ -430,6 +466,12 @@ curl -X POST \
         "priority": 10,
         "value": "mx.postal.example.com",
         "purpose": "mx"
+      },
+      {
+        "type": "TXT",
+        "name": "_dmarc.example.com",
+        "value": "v=DMARC1; p=quarantine; rua=mailto:abuse@example.com; ruf=mailto:abuse@example.com; sp=quarantine; adkim=r; aspf=r; fo=1; ri=864000;",
+        "purpose": "dmarc"
       }
     ]
   }
@@ -453,8 +495,28 @@ When setting up a domain with Postal, you'll need to configure several DNS recor
 1. **Verification Record (TXT)** - Used to verify domain ownership
 2. **SPF Record (TXT)** - Specifies which servers are allowed to send email for your domain
 3. **DKIM Record (TXT)** - Enables cryptographic signing of messages
-4. **Return Path Record (CNAME)** - Used for return path/bounce handling
-5. **MX Records** - Required if you want to receive inbound email
-6. **Tracking Domain Records (CNAME)** - For open/click tracking
+4. **DMARC Record (TXT)** - Configures email authentication policy and reporting (automatically generated if not provided)
+5. **Return Path Record (CNAME)** - Used for return path/bounce handling
+6. **MX Records** - Required if you want to receive inbound email (uses global config by default, can be customized per domain)
+7. **Tracking Domain Records (CNAME)** - For open/click tracking
 
 The `dns_records` endpoint provides all the necessary records for proper configuration.
+
+### Automatic DMARC Generation
+
+When creating a domain, if no `dmarc_record` parameter is provided, Postal will automatically generate a default DMARC record with the following format:
+
+```
+v=DMARC1; p=quarantine; rua=mailto:abuse@{domain}; ruf=mailto:abuse@{domain}; sp=quarantine; adkim=r; aspf=r; fo=1; ri=864000;
+```
+
+This provides a secure default configuration with:
+- **Policy**: `p=quarantine` - Suspicious emails are quarantined
+- **Subdomain Policy**: `sp=quarantine` - Same policy applies to subdomains
+- **Aggregate Reports**: Sent to `abuse@{domain}`
+- **Forensic Reports**: Sent to `abuse@{domain}`
+- **Alignment**: Relaxed mode for both DKIM and SPF
+- **Reporting**: Generate reports on any authentication failure
+- **Report Interval**: 864000 seconds (10 days)
+
+You can override this by providing your own `dmarc_record` value when creating the domain.

@@ -56,7 +56,7 @@ class DomainsController < ApplicationController
 
   def create
     scope = @server ? @server.domains : organization.domains
-    @domain = scope.build(params.require(:domain).permit(:name, :verification_method))
+    @domain = scope.build(params.require(:domain).permit(:name, :verification_method, :custom_mx_records, :dmarc_record))
 
     if current_user.admin?
       @domain.verification_method = "DNS"

@@ -5,7 +5,7 @@ require "resolv"
 module HasDNSChecks
 
   def dns_ok?
-    spf_status == "OK" && dkim_status == "OK" && %w[OK Missing].include?(mx_status) && %w[OK Missing].include?(return_path_status)
+    spf_status == "OK" && dkim_status == "OK" && %w[OK Missing].include?(mx_status) && %w[OK Missing].include?(return_path_status) && %w[OK Missing].include?(dmarc_status)
   end
 
   def dns_checked?
@@ -17,6 +17,7 @@ module HasDNSChecks
     check_dkim_record
     check_mx_records
     check_return_path_record
+    check_dmarc_record
     self.dns_checked_at = Time.now
     save!
     if source == :auto && !dns_ok? && owner.is_a?(Server)
@@ -32,7 +33,9 @@ module HasDNSChecks
         mx_status: mx_status,
         mx_error: mx_error,
         return_path_status: return_path_status,
-        return_path_error: return_path_error
+        return_path_error: return_path_error,
+        dmarc_status: dmarc_status,
+        dmarc_error: dmarc_error
       })
     end
     dns_ok?
@@ -131,15 +134,16 @@ module HasDNSChecks
 
   def check_mx_records
     records = resolver.mx(name).map(&:last)
+    expected_mx = mx_records  # Uses domain-specific or global config
     if records.empty?
       self.mx_status = "Missing"
       self.mx_error = "There are no MX records for #{name}"
     else
-      missing_records = Postal::Config.dns.mx_records.dup - records.map { |r| r.to_s.downcase }
+      missing_records = expected_mx.dup - records.map { |r| r.to_s.downcase }
       if missing_records.empty?
         self.mx_status = "OK"
         self.mx_error = nil
-      elsif missing_records.size == Postal::Config.dns.mx_records.size
+      elsif missing_records.size == expected_mx.size
         self.mx_status = "Missing"
         self.mx_error = "You have MX records but none of them point to us."
       else
@@ -174,6 +178,47 @@ module HasDNSChecks
 
   def check_return_path_record!
     check_return_path_record
+    save!
+  end
+
+  #
+  # DMARC
+  #
+
+  def check_dmarc_record
+    return unless dmarc_enabled?  # Skip if DMARC not configured
+
+    begin
+      records = resolver.txt(dmarc_record_name)
+      dmarc_records = records.grep(/\Av=DMARC1/)
+
+      if dmarc_records.empty?
+        self.dmarc_status = "Missing"
+        self.dmarc_error = "No DMARC record exists at #{dmarc_record_name}"
+      elsif dmarc_records.size > 1
+        self.dmarc_status = "Invalid"
+        self.dmarc_error = "Multiple DMARC records found. There should only be one."
+      else
+        actual_record = dmarc_records.first.strip
+        expected_record = dmarc_record.strip
+
+        # Compare records (allowing for minor formatting differences)
+        if actual_record.gsub(/\s+/, ' ') == expected_record.gsub(/\s+/, ' ')
+          self.dmarc_status = "OK"
+          self.dmarc_error = nil
+        else
+          self.dmarc_status = "Invalid"
+          self.dmarc_error = "DMARC record doesn't match. Expected: #{expected_record}"
+        end
+      end
+    rescue => e
+      self.dmarc_status = "Invalid"
+      self.dmarc_error = "Error checking DMARC: #{e.message}"
+    end
+  end
+
+  def check_dmarc_record!
+    check_dmarc_record
     save!
   end
 

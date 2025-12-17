@@ -48,12 +48,24 @@ module LegacyAPI
       
       # MX records - only for incoming domains
       if domain.incoming?
+        domain.mx_records.each do |mx_host|
+          records << {
+            type: "MX",
+            name: domain.name,
+            priority: 10,
+            value: mx_host,
+            purpose: "mx"
+          }
+        end
+      end
+
+      # DMARC record - if configured
+      if domain.dmarc_enabled?
         records << {
-          type: "MX",
-          name: domain.name,
-          priority: 10,
-          value: Postal::Config.dns.mx_records.first,
-          purpose: "mx"
+          type: "TXT",
+          name: domain.dmarc_record_name,
+          value: domain.dmarc_record,
+          purpose: "dmarc"
         }
       end
       
@@ -123,7 +135,8 @@ module LegacyAPI
           spf_status: domain.spf_status,
           dkim_status: domain.dkim_status,
           mx_status: domain.mx_status,
-          return_path_status: domain.return_path_status
+          return_path_status: domain.return_path_status,
+          dmarc_status: domain.dmarc_status
         }
         
         # Add stats for each domain if requested (defaults to false)
@@ -203,22 +216,31 @@ module LegacyAPI
     def create
       # Extract required parameters
       domain_name = api_params["name"]
-      
+      custom_mx_records = api_params["custom_mx_records"]
+      dmarc_record = api_params["dmarc_record"]
+
       # Validate parameters
       if domain_name.blank?
         render_parameter_error("name is required")
         return
       end
-      
+
       # Use the server directly from the credential
       server = @current_credential.server
-      
-      # Create the domain
-      domain = server.domains.build(
+
+      # Build domain attributes
+      domain_attrs = {
         name: domain_name,
         verification_method: "DNS"
-      )
-      
+      }
+
+      # Add optional parameters if provided
+      domain_attrs[:custom_mx_records] = custom_mx_records if custom_mx_records.present?
+      domain_attrs[:dmarc_record] = dmarc_record if dmarc_record.present?
+
+      # Create the domain
+      domain = server.domains.build(domain_attrs)
+
       domain.verified_at = Time.now
 
       # Check if domain already exists
@@ -310,6 +332,10 @@ module LegacyAPI
               mx: {
                 status: domain.mx_status,
                 error: domain.mx_error
+              },
+              dmarc: {
+                status: domain.dmarc_status,
+                error: domain.dmarc_error
               }
             }
           }
@@ -334,6 +360,10 @@ module LegacyAPI
                       mx: {
                         status: domain.mx_status,
                         error: domain.mx_error
+                      },
+                      dmarc: {
+                        status: domain.dmarc_status,
+                        error: domain.dmarc_error
                       }
                     }
       end
@@ -392,6 +422,10 @@ module LegacyAPI
             mx: {
               status: domain.mx_status,
               error: domain.mx_error
+            },
+            dmarc: {
+              status: domain.dmarc_status,
+              error: domain.dmarc_error
             }
           }
         },

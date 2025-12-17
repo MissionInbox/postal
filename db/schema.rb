@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_13_000001) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_17_201024) do
   create_table "additional_route_endpoints", id: :integer, charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "route_id"
     t.string "endpoint_type"
@@ -99,6 +99,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_13_000001) do
     t.integer "owner_id"
     t.string "dkim_identifier_string"
     t.boolean "use_for_any"
+    t.text "dmarc_record"
+    t.string "dmarc_status"
+    t.string "dmarc_error"
+    t.text "custom_mx_records"
     t.index ["server_id"], name: "index_domains_on_server_id"
     t.index ["uuid"], name: "index_domains_on_uuid", length: 8
   end

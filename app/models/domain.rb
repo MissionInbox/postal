@@ -5,30 +5,34 @@
 # Table name: domains
 #
 #  id                     :integer          not null, primary key
-#  server_id              :integer
-#  uuid                   :string(255)
-#  name                   :string(255)
-#  verification_token     :string(255)
-#  verification_method    :string(255)
-#  verified_at            :datetime
+#  custom_mx_records      :text(65535)
+#  dkim_error             :string(255)
+#  dkim_identifier_string :string(255)
 #  dkim_private_key       :text(65535)
+#  dkim_status            :string(255)
+#  dmarc_error            :string(255)
+#  dmarc_record           :text(65535)
+#  dmarc_status           :string(255)
+#  dns_checked_at         :datetime
+#  incoming               :boolean          default(TRUE)
+#  mx_error               :string(255)
+#  mx_status              :string(255)
+#  name                   :string(255)
+#  outgoing               :boolean          default(TRUE)
+#  owner_type             :string(255)
+#  return_path_error      :string(255)
+#  return_path_status     :string(255)
+#  spf_error              :string(255)
+#  spf_status             :string(255)
+#  use_for_any            :boolean
+#  uuid                   :string(255)
+#  verification_method    :string(255)
+#  verification_token     :string(255)
+#  verified_at            :datetime
 #  created_at             :datetime
 #  updated_at             :datetime
-#  dns_checked_at         :datetime
-#  spf_status             :string(255)
-#  spf_error              :string(255)
-#  dkim_status            :string(255)
-#  dkim_error             :string(255)
-#  mx_status              :string(255)
-#  mx_error               :string(255)
-#  return_path_status     :string(255)
-#  return_path_error      :string(255)
-#  outgoing               :boolean          default(TRUE)
-#  incoming               :boolean          default(TRUE)
-#  owner_type             :string(255)
 #  owner_id               :integer
-#  dkim_identifier_string :string(255)
-#  use_for_any            :boolean
+#  server_id              :integer
 #
 # Indexes
 #
@@ -58,6 +62,7 @@ class Domain < ApplicationRecord
   random_string :dkim_identifier_string, type: :chars, length: 6, unique: true, upper_letters_only: true
 
   before_create :generate_dkim_key
+  before_save :generate_default_dmarc_record
 
   scope :verified, -> { where.not(verified_at: nil) }
 
@@ -149,6 +154,43 @@ class Domain < ApplicationRecord
     "#{Postal::Config.dns.custom_return_path_prefix}.#{name}"
   end
 
+  # Returns MX records for this domain. Uses custom MX records if configured,
+  # otherwise falls back to global configuration.
+  #
+  # @return [Array<String>] Array of MX record hostnames
+  def mx_records
+    if custom_mx_records.present?
+      JSON.parse(custom_mx_records)
+    else
+      Postal::Config.dns.mx_records
+    end
+  end
+
+  # Sets custom MX records, accepting either an array or JSON string
+  #
+  # @param value [Array<String>, String] Array of MX hostnames or JSON string
+  def custom_mx_records=(value)
+    if value.is_a?(Array)
+      super(value.to_json)
+    else
+      super(value)
+    end
+  end
+
+  # Returns whether DMARC is configured for this domain
+  #
+  # @return [Boolean]
+  def dmarc_enabled?
+    dmarc_record.present?
+  end
+
+  # Returns the DMARC record name (subdomain)
+  #
+  # @return [String] DMARC record name
+  def dmarc_record_name
+    "_dmarc.#{name}"
+  end
+
   # Returns a DNSResolver instance that can be used to perform DNS lookups needed for
   # the verification and DNS checking for this domain.
   #
@@ -193,6 +235,17 @@ class Domain < ApplicationRecord
     else
       self.verification_token = nil
     end
+  end
+
+  def generate_default_dmarc_record
+    # Only generate if dmarc_record is blank (not set by user)
+    return if dmarc_record.present?
+
+    # Use abuse@{domain_name} as the reporting email
+    report_email = "abuse@#{name}"
+
+    # Generate default DMARC record with quarantine policy
+    self.dmarc_record = "v=DMARC1; p=quarantine; rua=mailto:#{report_email}; ruf=mailto:#{report_email}; sp=quarantine; adkim=r; aspf=r; fo=1; ri=864000;"
   end
 
 end

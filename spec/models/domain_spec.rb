@@ -5,10 +5,14 @@
 # Table name: domains
 #
 #  id                     :integer          not null, primary key
+#  custom_mx_records      :text(65535)
 #  dkim_error             :string(255)
 #  dkim_identifier_string :string(255)
 #  dkim_private_key       :text(65535)
 #  dkim_status            :string(255)
+#  dmarc_error            :string(255)
+#  dmarc_record           :text(65535)
+#  dmarc_status           :string(255)
 #  dns_checked_at         :datetime
 #  incoming               :boolean          default(TRUE)
 #  mx_error               :string(255)
