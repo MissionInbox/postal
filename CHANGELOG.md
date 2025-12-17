@@ -2,6 +2,14 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.53.0](https://github.com/MissionInbox/postal/compare/3.52.0...3.53.0) (2025-12-17)
+
+
+### Features
+
+* add dmarc to domain ([5242e89](https://github.com/MissionInbox/postal/commit/5242e89d98df330a514372f58613fbfed1f1050e))
+* update domains doc ([ff7f3b0](https://github.com/MissionInbox/postal/commit/ff7f3b02b728a931fd307b3ecda2c5e5a7069731))
+
 ## [3.52.0](https://github.com/MissionInbox/postal/compare/3.51.0...3.52.0) (2025-12-03)
 
 
