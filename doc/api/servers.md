@@ -427,6 +427,126 @@ curl -X POST \
 - The system aggregates daily statistics to calculate totals for the specified range
 - If statistics cannot be retrieved for the server, it will be included with `sent_emails: 0` and may include an `error` field
 
+### Get Email Statistics Breakdown by Mailbox
+
+**URL:** `/api/v1/servers/email-stats-breakdown`
+**Method:** POST
+
+Returns a breakdown of sent emails by mailbox (sender email address) within a specified date range for the authenticated server. This endpoint provides detailed statistics showing how many emails were sent from each mailbox during the specified period.
+
+#### Parameters
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| start_date | String | Yes | The start date for the range in ISO 8601 format (e.g., "2025-01-01T00:00:00Z") |
+| end_date | String | Yes | The end date for the range in ISO 8601 format (e.g., "2025-01-31T23:59:59Z") |
+
+#### Example Request
+
+```bash
+curl -X POST \
+  https://postal.example.com/api/v1/servers/email-stats-breakdown \
+  -H 'Content-Type: application/json' \
+  -H 'X-Server-API-Key: YOUR_API_KEY' \
+  -d '{
+    "start_date": "2025-01-01T00:00:00Z",
+    "end_date": "2025-01-31T23:59:59Z"
+  }'
+```
+
+#### Example Response
+
+```json
+{
+  "status": "success",
+  "time": 0.245,
+  "flags": {},
+  "data": {
+    "start_date": "2025-01-01T00:00:00Z",
+    "end_date": "2025-01-31T23:59:59Z",
+    "breakdown": {
+      "user@example.com": 45678,
+      "noreply@example.com": 23456,
+      "support@example.com": 12345,
+      "sales@example.com": 7953
+    },
+    "total_mailboxes": 4,
+    "total_emails": 89432
+  }
+}
+```
+
+#### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| start_date | String | The start date of the range in ISO 8601 format |
+| end_date | String | The end date of the range in ISO 8601 format |
+| breakdown | Object | Hash of email addresses (keys) with sent email counts (values), ordered by count descending |
+| total_mailboxes | Integer | Number of unique mailboxes that sent emails in the date range |
+| total_emails | Integer | Total number of emails sent across all mailboxes |
+
+#### Error Responses
+
+**Missing Parameters:**
+```json
+{
+  "status": "parameter-error",
+  "time": 0.012,
+  "flags": {},
+  "data": {
+    "message": "start_date is required"
+  }
+}
+```
+
+**Invalid Date Format:**
+```json
+{
+  "status": "parameter-error",
+  "time": 0.015,
+  "flags": {},
+  "data": {
+    "message": "Invalid date format. Use ISO 8601 format (e.g., 2025-01-01T00:00:00Z)"
+  }
+}
+```
+
+**Invalid Date Range:**
+```json
+{
+  "status": "parameter-error",
+  "time": 0.018,
+  "flags": {},
+  "data": {
+    "message": "start_date must be before end_date"
+  }
+}
+```
+
+**Query Error:**
+```json
+{
+  "status": "error",
+  "time": 0.025,
+  "flags": {},
+  "data": {
+    "code": "QueryError",
+    "message": "Unable to retrieve email statistics breakdown",
+    "error": "Error details"
+  }
+}
+```
+
+#### Notes
+
+- The endpoint requires authentication using a Server API key in the `X-Server-API-Key` header
+- Statistics are retrieved only for the server associated with the API key used for authentication
+- Date range is inclusive of both start and end dates
+- Only outgoing emails with a valid `mail_from` address are included in the breakdown
+- Results are ordered by email count in descending order (highest volume senders first)
+- Empty or NULL `mail_from` addresses are excluded from the breakdown
+
 ### Update Server Mode
 
 **URL:** `/api/v1/servers/update-mode`  

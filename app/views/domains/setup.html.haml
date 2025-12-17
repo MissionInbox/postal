@@ -99,4 +99,27 @@
     If you wish to receive incoming e-mail for this domain, you need to add the following MX records
     to the domain. You don't have to do this and we'll only tell you if they're set up or not. Both
     records should be priority <b>10</b>.
-  %pre.codeBlock.u-margin= Postal::Config.dns.mx_records.join("\n")
+  %pre.codeBlock.u-margin= @domain.mx_records.join("\n")
+
+
+  %h3.pageContent__subTitle DMARC Record (Optional)
+  - if @domain.dmarc_enabled?
+    - if @domain.dmarc_status == 'OK'
+      %p.pageContent__text.u-green.u-bold
+        %span.label.label--green Good
+        Your DMARC record looks good!
+    - elsif @domain.dmarc_status == 'Missing'
+      %p.pageContent__text.u-grey.u-bold
+        %span.label.label--grey Missing
+        = @domain.dmarc_error
+    - elsif !@domain.dmarc_status.nil?
+      %p.pageContent__text.u-orange.u-bold
+        %span.label.label--orange Warning
+        = @domain.dmarc_error
+
+    %p.pageContent__text
+      You need to add a TXT record at <b>#{@domain.dmarc_record_name}</b> with the following content:
+    %pre.codeBlock.u-margin= @domain.dmarc_record
+  - else
+    %p.pageContent__text.u-grey
+      DMARC is not configured for this domain. This is optional but recommended for email authentication and reporting.
