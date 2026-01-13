@@ -39,16 +39,20 @@ module Worker
         !!(ip =~ /\A(127\.|fe80:|::)/)
       end
 
-      # Obtain a queued message from the database for processing
+      # Obtain a queued message from the database for processing.
+      # Uses SKIP LOCKED to avoid lock contention when multiple workers are running.
       #
       # @return [void]
       def lock_message_for_processing
-        QueuedMessage.where(ip_address_id: [nil, @ip_addresses])
-                     .where(locked_by: nil, locked_at: nil)
-                     .ready_with_delayed_retry
-                     .order_by_priority
-                     .limit(1)
-                     .update_all(locked_by: @locker, locked_at: @lock_time)
+        message = QueuedMessage.where(ip_address_id: [nil, @ip_addresses])
+                               .where(locked_by: nil, locked_at: nil)
+                               .ready_with_delayed_retry
+                               .order_by_priority
+                               .limit(1)
+                               .lock("FOR UPDATE SKIP LOCKED")
+                               .first
+
+        message&.update_columns(locked_by: @locker, locked_at: @lock_time)
       end
 
       # Get a full list of all messages which we can process (i.e. those which have just

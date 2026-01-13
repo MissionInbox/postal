@@ -82,8 +82,17 @@ class QueuedMessage < ApplicationRecord
     else
       time = Time.now
       locker = Postal.locker_name
-      self.class.ready.where(batch_key: batch_key, ip_address_id: ip_address_id, locked_by: nil, locked_at: nil).limit(limit).update_all(locked_by: locker, locked_at: time)
-      QueuedMessage.where(batch_key: batch_key, ip_address_id: ip_address_id, locked_by: locker, locked_at: time).where.not(id: id)
+      messages = self.class.ready
+                     .where(batch_key: batch_key, ip_address_id: ip_address_id, locked_by: nil, locked_at: nil)
+                     .limit(limit)
+                     .lock("FOR UPDATE SKIP LOCKED")
+                     .to_a
+
+      messages.each do |msg|
+        msg.update_columns(locked_by: locker, locked_at: time)
+      end
+
+      messages.reject { |msg| msg.id == id }
     end
   end
 
