@@ -53,6 +53,7 @@ module Worker
                                .first
 
         message&.update_columns(locked_by: @locker, locked_at: @lock_time)
+        nil
       end
 
       # Get a full list of all messages which we can process (i.e. those which have just
