@@ -30,7 +30,10 @@ class OutgoingMessagePrototype
     attributes.each do |key, value|
       instance_variable_set("@#{key}", value)
     end
-    @message_id ||= "#{SecureRandom.uuid}@#{Postal::Config.dns.return_path_domain}"
+    @message_id ||= begin
+      from_domain = @from.to_s.match(/@(.+?)(?:\s|>|$)/)&.[](1) || Postal::Config.dns.return_path_domain
+      "#{SecureRandom.uuid}@#{from_domain}"
+    end
   end
 
   def from_address
