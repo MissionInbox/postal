@@ -30,7 +30,10 @@ class OutgoingMessagePrototype
     attributes.each do |key, value|
       instance_variable_set("@#{key}", value)
     end
-    @message_id ||= "#{SecureRandom.uuid}@#{Postal::Config.dns.return_path_domain}"
+    @message_id ||= begin
+      from_domain = @from.to_s.match(/@(.+?)(?:\s|>|$)/)&.[](1) || Postal::Config.dns.return_path_domain
+      "#{SecureRandom.uuid}@#{from_domain}"
+    end
   end
 
   def from_address
@@ -160,17 +163,30 @@ class OutgoingMessagePrototype
       mail.sender = @sender
       mail.subject = @subject
       mail.reply_to = @reply_to
-      mail.part content_type: "multipart/alternative" do |p|
-        if @plain_body.present?
+      # Intelligently structure the message based on content
+      has_plain = @plain_body.present?
+      has_html = @html_body.present?
+
+      if has_plain && has_html
+        # Both bodies provided - use multipart/alternative
+        mail.part content_type: "multipart/alternative" do |p|
           p.text_part = Mail::Part.new
           p.text_part.body = @plain_body
-        end
-        if @html_body.present?
+
           p.html_part = Mail::Part.new
           p.html_part.content_type = "text/html; charset=UTF-8"
           p.html_part.body = @html_body
         end
+      elsif has_plain
+        # Only plain text - single part
+        mail.content_type = "text/plain; charset=UTF-8"
+        mail.body = @plain_body
+      elsif has_html
+        # Only HTML - single part
+        mail.content_type = "text/html; charset=UTF-8"
+        mail.body = @html_body
       end
+
       attachments.each do |attachment|
         mail.attachments[attachment[:name]] = {
           mime_type: attachment[:content_type],
