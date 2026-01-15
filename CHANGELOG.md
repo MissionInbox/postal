@@ -2,6 +2,18 @@
 
 This file contains all the latest changes and updates to Postal.
 
+## [3.54.0](https://github.com/MissionInbox/postal/compare/3.53.0...3.54.0) (2026-01-15)
+
+
+### Features
+
+* use from domain for the message id generation ([38d9b65](https://github.com/MissionInbox/postal/commit/38d9b650b829b9d13824f005a925b7e5a897c8b7))
+
+
+### Bug Fixes
+
+* multipart generation issue ([4603c43](https://github.com/MissionInbox/postal/commit/4603c43ed0db27c6fad0ee0b4c6070f343ff0619))
+
 ## [3.53.0](https://github.com/MissionInbox/postal/compare/3.52.0...3.53.0) (2025-12-17)
 
 
