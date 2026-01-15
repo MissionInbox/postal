@@ -1,0 +1,63 @@
+# Postal Message Injection Configuration
+# Copy this file to inject_messages.yml and customize as needed
+# DO NOT commit inject_messages.yml to version control (contains API keys)
+
+api:
+  # Postal server URL (HTTPS recommended)
+  url: https://cobalt.obmengine.com
+
+  # Server API key - get from Postal UI or database:
+  # docker exec postal-mariadb mysql -u postal -ppostal postal -e \
+  #   "SELECT key FROM credentials WHERE server_id = 18 LIMIT 1"
+  key: YOUR_API_KEY_HERE
+
+defaults:
+  # From address (must be authenticated domain on the server)
+  from: test@apple.missioninbox.tech
+
+  # To address (recipient)
+  to: lin@beta.obmengine.com
+
+  # Subject prefix (will be followed by #N - timestamp)
+  subject_prefix: "Test Message"
+
+  # Number of messages to inject
+  count: 10000
+
+  # Message priority (higher = processed sooner, optional)
+  priority: 0
+
+  # Custom tag for tracking (optional)
+  tag: load-test
+
+# Body templates (one will be selected randomly if randomization is enabled)
+body_templates:
+  - "This is a test message for delivery testing."
+  - "Testing Postal message processing pipeline."
+  - "Load testing message queue performance."
+  - "Verifying Postal API message injection."
+
+# Randomization settings
+randomization:
+  # Add random Lorem Ipsum text to body
+  enabled: true
+
+  # Number of Lorem Ipsum sentences to add
+  lorem_ipsum_sentences: 3
+
+  # Number of random words/numbers to add
+  random_words: 5
+
+# Performance settings
+performance:
+  # Number of parallel HTTP requests (Ruby script only)
+  concurrency: 10
+
+  # Maximum requests per second (0 = unlimited)
+  rate_limit: 100
+
+  # Number of retry attempts on failure
+  retry_attempts: 3
+
+  # Delay between retries (seconds)
+  retry_delay: 1
